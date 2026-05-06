@@ -1,7 +1,7 @@
 {
   "name": "Reform Training",
   "short_name": "Reform",
-  "start_url": ".",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#101418",
   "theme_color": "#101418",

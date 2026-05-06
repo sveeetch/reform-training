@@ -196,6 +196,7 @@ let state = {
   onlineReady: false
 };
 
+applyUserFromUrl();
 normalizeState();
 
 function item(id, name, weight, reps, note, category) {
@@ -220,6 +221,21 @@ function loadLocal(key, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function applyUserFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const urlUser = params.get("user");
+  if (!urlUser) return;
+  const matchedUser = state.users.find(user => user.toLowerCase() === urlUser.toLowerCase()) || urlUser;
+  state.selectedUser = matchedUser;
+}
+
+function syncUserToUrl() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("user") === state.selectedUser) return;
+  url.searchParams.set("user", state.selectedUser);
+  window.history.replaceState({}, "", url);
 }
 
 function normalizeState() {
@@ -565,6 +581,7 @@ function renderUsers() {
   if (!state.users.includes(state.selectedUser)) state.selectedUser = state.users[0] || DEFAULT_USERS[0];
   els.userSelect.value = state.selectedUser;
   els.userNameInput.value = state.selectedUser;
+  syncUserToUrl();
 }
 
 function renderDays() {
@@ -591,7 +608,7 @@ function exerciseCard(exercise, index, hasSession) {
       <div class="set-number">${setIndex + 1}</div>
       <input inputmode="decimal" aria-label="Вес" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="кг">
       <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
-      <button class="ghost" data-action="toggle-set" type="button">${set.done ? "Готово" : "Отметить"}</button>
+      <button class="check-btn ${set.done ? "active" : ""}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">✓</button>
     </div>
   `).join("");
 
@@ -624,21 +641,27 @@ function renderHistory() {
     return;
   }
   els.historyList.innerHTML = state.sessions.slice(0, 20).map(session => {
-    const volume = sessionVolume(session);
     const canCopy = session.status === "completed" && session.exercises.length;
     return `
       <div class="history-row" data-session="${session.id}">
         <div>
           <strong>${escapeHtml(session.dayName)}</strong>
-          <p class="muted">${new Date(session.date).toLocaleString("ru-RU")} · ${escapeHtml(session.user)}</p>
+          <p class="muted">${escapeHtml(sessionTimeText(session))} · ${escapeHtml(session.user)}</p>
         </div>
         <div class="history-actions">
-          <span class="badge">${sessionLabel(session.status)} · ${Math.round(volume)} кг</span>
+          <span class="badge">${sessionLabel(session.status)}</span>
           ${canCopy ? `<button class="ghost" data-copy-session="${session.id}" type="button">Скопировать</button>` : ""}
         </div>
       </div>
     `;
   }).join("");
+}
+
+function sessionTimeText(session) {
+  const started = new Date(session.date).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  if (!session.finishedAt) return `старт ${started}`;
+  const finished = new Date(session.finishedAt).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  return `${started} → ${finished}`;
 }
 
 function sessionVolume(session) {
