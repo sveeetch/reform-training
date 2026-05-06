@@ -1,6 +1,6 @@
 # Reform Training Context
 
-Last updated: 2026-05-06, update 2
+Last updated: 2026-05-06, update 3
 
 ## What This Is
 
@@ -49,7 +49,9 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 - Completed workouts in History can be copied as plain text for notes/messengers.
 - History rows should show session status plus start/end time, not total volume.
 - Selected user is shareable through a URL query parameter: `?user=Dima`, `?user=Dasha`, etc.
-- Set completion uses a compact check button (`✓`). Completed set rows are visually muted, like crossed-off work, instead of highlighted green.
+- Set completion uses a compact check button (`✓`). The next pending set in an active session is accent-highlighted; completed set rows are visually muted, like crossed-off work.
+- Active session finish button uses a secondary style so it does not look like the primary “start” action.
+- Service worker registration calls `registration.update()`, reloads on `controllerchange`, and `sw.js` uses `skipWaiting()` plus `clients.claim()` for faster deploy pickup.
 - Service worker cache currently must be bumped when deploying visible app changes.
 
 ## Important UX Preferences

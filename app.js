@@ -598,19 +598,27 @@ function renderWorkout() {
   const session = currentSession();
   els.sessionState.textContent = session ? `${sessionLabel(session.status)} · ${session.user}` : "Не начата";
   els.startSessionBtn.textContent = session ? "Завершить тренировку" : "Начать тренировку";
+  els.startSessionBtn.classList.toggle("primary", !session);
+  els.startSessionBtn.classList.toggle("secondary", Boolean(session));
   const exercises = session?.exercises || currentDay().exercises;
   els.exerciseList.innerHTML = exercises.map((exercise, index) => exerciseCard(exercise, index, Boolean(session))).join("");
 }
 
 function exerciseCard(exercise, index, hasSession) {
-  const sets = exercise.sets.map((set, setIndex) => `
-    <div class="set-row ${set.done ? "done" : ""}" data-exercise="${exercise.id}" data-set="${set.id}">
+  const nextPendingSetIndex = exercise.sets.findIndex(set => !set.done);
+  const sets = exercise.sets.map((set, setIndex) => {
+    const isNextPendingSet = hasSession && !set.done && setIndex === nextPendingSetIndex;
+    const rowClass = [set.done ? "done" : "", isNextPendingSet ? "next" : ""].filter(Boolean).join(" ");
+    const checkClass = ["check-btn", set.done ? "active" : "", isNextPendingSet ? "next" : ""].filter(Boolean).join(" ");
+    return `
+    <div class="set-row ${rowClass}" data-exercise="${exercise.id}" data-set="${set.id}">
       <div class="set-number">${setIndex + 1}</div>
       <input inputmode="decimal" aria-label="Вес" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="кг">
       <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
-      <button class="check-btn ${set.done ? "active" : ""}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">✓</button>
+      <button class="${checkClass}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">✓</button>
     </div>
-  `).join("");
+  `;
+  }).join("");
 
   return `
     <article class="exercise-card" data-exercise="${exercise.id}">
@@ -1148,7 +1156,18 @@ els.resetProgramBtn.addEventListener("click", async () => {
 });
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+  navigator.serviceWorker.register("sw.js").then(registration => {
+    registration.update();
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  }).catch(error => {
+    console.warn("Service worker registration failed", error);
+  });
 }
 
 render();
