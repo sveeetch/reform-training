@@ -1,35 +1,35 @@
 const DEFAULT_PROGRAM = [
   {
     id: "fullbody-1",
-    name: "Reform fullbody 1",
+    name: "Реформ фулбоди 1 (Reform fullbody 1)",
     exercises: [
-      item("bench-press", "Жим штанги лежа", "90", [7, 7, 8], "Кладу на грудь", "chest"),
-      item("lat-pulldown", "Тяга верх блока", "85", [12, 12, 12, 12], "Параллельный широкий хват", "back"),
-      item("lateral-raise", "Гантели на плечи махи", "10", [20, 20, 20], "Руки прямые", "shoulders"),
-      item("triceps-bar", "Трицепс прямой гриф", "55", [15, 15, 15, 15], "Делай медленно. Последний сет можно 40кг x 15", "arms"),
-      item("db-curl", "Бицепс гантели по одной", "25", [16, 16, 16, 15], "Последний сет можно 15кг x 15", "arms"),
-      item("leg-press", "Жим ногами", "200", [15, 15, 15, 15], "", "legs"),
-      item("seated-calf", "Икры сидя тренажер", "100", [15, 15, 15, 15], "", "calves")
+      item("bench-press", "Жим штанги лежа (Barbell bench press)", "90", [7, 7, 8], "Кладу на грудь (Touch chest)", "chest"),
+      item("lat-pulldown", "Тяга верхнего блока (Lat pulldown)", "85", [12, 12, 12, 12], "Параллельный широкий хват (Wide parallel grip)", "back"),
+      item("lateral-raise", "Махи гантелями в стороны (Dumbbell lateral raise)", "10", [20, 20, 20], "Руки прямые (Straight arms)", "shoulders"),
+      item("triceps-bar", "Трицепс с прямым грифом (Straight bar triceps pushdown)", "55", [15, 15, 15, 15], "Делай медленно. Последний сет можно 40кг x 15 (Slow tempo)", "arms"),
+      item("db-curl", "Бицепс гантелью по одной (Single-arm dumbbell curl)", "25", [16, 16, 16, 15], "Последний сет можно 15кг x 15 (Drop set option)", "arms"),
+      item("leg-press", "Жим ногами (Leg press)", "200", [15, 15, 15, 15], "", "legs"),
+      item("seated-calf", "Икры сидя в тренажере (Seated calf raise)", "100", [15, 15, 15, 15], "", "calves")
     ]
   },
   {
     id: "fullbody-2",
-    name: "Reform fullbody 2",
+    name: "Реформ фулбоди 2 (Reform fullbody 2)",
     exercises: [
-      item("squat", "Присед", "80", [13, 13, 13, 13], "Глубоко", "legs"),
-      item("pec-deck", "Бабочка", "94", [12, 12, 12, 12], "Макс вес. Сидушка на 8, сверху 2", "chest"),
-      item("low-row", "Тяга нижн блока", "90", [12, 12, 12], "45+45кг", "back"),
-      item("shoulder-press", "Жим плечи", "80", [15, 15, 15, 20, 30], "Гриф 20кг и 30кг блины. Потом 20кг, пустой гриф 30", "shoulders"),
-      item("french-press", "Французкий жим", "30", [18, 18, 18], "", "arms"),
-      item("ez-curl", "Кривая штанга", "40", [12, 12, 13], "", "arms")
+      item("squat", "Присед (Squat)", "80", [13, 13, 13, 13], "Глубоко (Deep range)", "legs"),
+      item("pec-deck", "Бабочка (Pec deck)", "94", [12, 12, 12, 12], "Макс вес. Сидушка на 8, сверху 2 (Max stack)", "chest"),
+      item("low-row", "Тяга нижнего блока (Seated cable row)", "90", [12, 12, 12], "45+45кг (45+45kg)", "back"),
+      item("shoulder-press", "Жим на плечи (Shoulder press)", "80", [15, 15, 15, 20, 30], "Гриф 20кг и 30кг блины. Потом 20кг, пустой гриф 30 (Barbell setup)", "shoulders"),
+      item("french-press", "Французский жим (French press)", "30", [18, 18, 18], "", "arms"),
+      item("ez-curl", "Подъем на бицепс с EZ-грифом (EZ bar curl)", "40", [12, 12, 13], "", "arms")
     ]
   },
   {
     id: "pump-day",
-    name: "Pump day",
+    name: "Памп-день (Pump day)",
     exercises: [
-      item("pullups", "Подтягивания", "", [10, 10, 10], "Памп день", "back"),
-      item("pushups", "Отжимания", "", [20, 20, 20], "Памп день", "chest")
+      item("pullups", "Подтягивания (Pull-ups)", "", [10, 10, 10], "Памп-день (Pump day)", "back"),
+      item("pushups", "Отжимания (Push-ups)", "", [20, 20, 20], "Памп-день (Pump day)", "chest")
     ]
   }
 ];
@@ -37,34 +37,34 @@ const DEFAULT_PROGRAM = [
 const DEFAULT_DASHA_PROGRAM = [
   {
     id: "dasha-glutes-1",
-    name: "Dasha glutes 1",
+    name: "Даша ягодицы 1 (Dasha glutes 1)",
     exercises: [
-      item("dasha-hip-thrust", "Hip thrust", "40", [12, 12, 10, 10], "Главное упражнение на ягодицы", "glutes"),
-      item("dasha-rdl", "Romanian deadlift", "30", [12, 12, 12], "Медленно, растяжение внизу", "glutes"),
-      item("dasha-abduction", "Abduction machine", "35", [18, 18, 18], "Разведение бедра в тренажере", "glutes"),
-      item("dasha-kickback", "Cable kickback", "10", [15, 15, 15], "Контроль, пауза сверху", "glutes"),
-      item("dasha-plank", "Plank", "", [45, 45, 45], "Секунды вместо повторов", "core")
+      item("dasha-hip-thrust", "Ягодичный мост со штангой (Hip thrust)", "40", [12, 12, 10, 10], "Главное упражнение на ягодицы (Main glute lift)", "glutes"),
+      item("dasha-rdl", "Румынская тяга (Romanian deadlift)", "30", [12, 12, 12], "Медленно, растяжение внизу (Slow stretch)", "glutes"),
+      item("dasha-abduction", "Разведение бедер в тренажере (Abduction machine)", "35", [18, 18, 18], "Разведение бедра в тренажере (Hip abduction)", "glutes"),
+      item("dasha-kickback", "Отведение ноги в кроссовере (Cable kickback)", "10", [15, 15, 15], "Контроль, пауза сверху (Controlled pause)", "glutes"),
+      item("dasha-plank", "Планка (Plank)", "", [45, 45, 45], "Секунды вместо повторов (Seconds instead of reps)", "core")
     ]
   },
   {
     id: "dasha-lower-2",
-    name: "Dasha lower 2",
+    name: "Даша низ 2 (Dasha lower 2)",
     exercises: [
-      item("dasha-bulgarian", "Bulgarian split squat", "10", [12, 12, 12], "На каждую ногу", "legs"),
-      item("dasha-leg-press", "Leg press glute focus", "80", [15, 15, 15], "Стопы выше и шире", "glutes"),
-      item("dasha-glute-bridge", "Glute bridge", "30", [15, 15, 15], "Пауза вверху", "glutes"),
-      item("dasha-ham-curl", "Leg curl", "25", [14, 14, 14], "Бицепс бедра", "legs"),
-      item("dasha-calf", "Standing calves", "40", [18, 18, 18], "", "calves")
+      item("dasha-bulgarian", "Болгарские выпады (Bulgarian split squat)", "10", [12, 12, 12], "На каждую ногу (Each leg)", "legs"),
+      item("dasha-leg-press", "Жим ногами с акцентом на ягодицы (Leg press glute focus)", "80", [15, 15, 15], "Стопы выше и шире (Feet high and wide)", "glutes"),
+      item("dasha-glute-bridge", "Ягодичный мост (Glute bridge)", "30", [15, 15, 15], "Пауза вверху (Pause at top)", "glutes"),
+      item("dasha-ham-curl", "Сгибание ног (Leg curl)", "25", [14, 14, 14], "Бицепс бедра (Hamstrings)", "legs"),
+      item("dasha-calf", "Икры стоя (Standing calves)", "40", [18, 18, 18], "", "calves")
     ]
   },
   {
     id: "dasha-upper-pump",
-    name: "Dasha upper pump",
+    name: "Даша верх памп (Dasha upper pump)",
     exercises: [
-      item("dasha-pulldown", "Lat pulldown", "30", [12, 12, 12], "", "back"),
-      item("dasha-pec-deck", "Pec deck", "25", [14, 14, 14], "", "chest"),
-      item("dasha-lateral", "Lateral raise", "4", [18, 18, 18], "", "shoulders"),
-      item("dasha-triceps", "Rope triceps", "15", [15, 15, 15], "", "arms")
+      item("dasha-pulldown", "Тяга верхнего блока (Lat pulldown)", "30", [12, 12, 12], "", "back"),
+      item("dasha-pec-deck", "Бабочка (Pec deck)", "25", [14, 14, 14], "", "chest"),
+      item("dasha-lateral", "Махи в стороны (Lateral raise)", "4", [18, 18, 18], "", "shoulders"),
+      item("dasha-triceps", "Трицепс с канатом (Rope triceps)", "15", [15, 15, 15], "", "arms")
     ]
   }
 ];
@@ -89,11 +89,63 @@ const CATEGORY_LABELS = {
   core: "CO"
 };
 
+const TEXT_MIGRATIONS = new Map([
+  ["Reform fullbody 1", "Реформ фулбоди 1 (Reform fullbody 1)"],
+  ["Reform fullbody 2", "Реформ фулбоди 2 (Reform fullbody 2)"],
+  ["Pump day", "Памп-день (Pump day)"],
+  ["Dasha glutes 1", "Даша ягодицы 1 (Dasha glutes 1)"],
+  ["Dasha lower 2", "Даша низ 2 (Dasha lower 2)"],
+  ["Dasha upper pump", "Даша верх памп (Dasha upper pump)"],
+  ["Жим штанги лежа", "Жим штанги лежа (Barbell bench press)"],
+  ["Тяга верх блока", "Тяга верхнего блока (Lat pulldown)"],
+  ["Гантели на плечи махи", "Махи гантелями в стороны (Dumbbell lateral raise)"],
+  ["Трицепс прямой гриф", "Трицепс с прямым грифом (Straight bar triceps pushdown)"],
+  ["Бицепс гантели по одной", "Бицепс гантелью по одной (Single-arm dumbbell curl)"],
+  ["Жим ногами", "Жим ногами (Leg press)"],
+  ["Икры сидя тренажер", "Икры сидя в тренажере (Seated calf raise)"],
+  ["Присед", "Присед (Squat)"],
+  ["Бабочка", "Бабочка (Pec deck)"],
+  ["Тяга нижн блока", "Тяга нижнего блока (Seated cable row)"],
+  ["Жим плечи", "Жим на плечи (Shoulder press)"],
+  ["Французкий жим", "Французский жим (French press)"],
+  ["Кривая штанга", "Подъем на бицепс с EZ-грифом (EZ bar curl)"],
+  ["Подтягивания", "Подтягивания (Pull-ups)"],
+  ["Отжимания", "Отжимания (Push-ups)"],
+  ["Hip thrust", "Ягодичный мост со штангой (Hip thrust)"],
+  ["Romanian deadlift", "Румынская тяга (Romanian deadlift)"],
+  ["Abduction machine", "Разведение бедер в тренажере (Abduction machine)"],
+  ["Cable kickback", "Отведение ноги в кроссовере (Cable kickback)"],
+  ["Plank", "Планка (Plank)"],
+  ["Bulgarian split squat", "Болгарские выпады (Bulgarian split squat)"],
+  ["Leg press glute focus", "Жим ногами с акцентом на ягодицы (Leg press glute focus)"],
+  ["Glute bridge", "Ягодичный мост (Glute bridge)"],
+  ["Leg curl", "Сгибание ног (Leg curl)"],
+  ["Standing calves", "Икры стоя (Standing calves)"],
+  ["Lat pulldown", "Тяга верхнего блока (Lat pulldown)"],
+  ["Pec deck", "Бабочка (Pec deck)"],
+  ["Lateral raise", "Махи в стороны (Lateral raise)"],
+  ["Rope triceps", "Трицепс с канатом (Rope triceps)"],
+  ["Кладу на грудь", "Кладу на грудь (Touch chest)"],
+  ["Параллельный широкий хват", "Параллельный широкий хват (Wide parallel grip)"],
+  ["Руки прямые", "Руки прямые (Straight arms)"],
+  ["Памп день", "Памп-день (Pump day)"],
+  ["Главное упражнение на ягодицы", "Главное упражнение на ягодицы (Main glute lift)"],
+  ["Медленно, растяжение внизу", "Медленно, растяжение внизу (Slow stretch)"],
+  ["Разведение бедра в тренажере", "Разведение бедра в тренажере (Hip abduction)"],
+  ["Контроль, пауза сверху", "Контроль, пауза сверху (Controlled pause)"],
+  ["Секунды вместо повторов", "Секунды вместо повторов (Seconds instead of reps)"],
+  ["На каждую ногу", "На каждую ногу (Each leg)"],
+  ["Стопы выше и шире", "Стопы выше и шире (Feet high and wide)"],
+  ["Пауза вверху", "Пауза вверху (Pause at top)"],
+  ["Бицепс бедра", "Бицепс бедра (Hamstrings)"]
+]);
+
 const els = {
   syncStatus: document.querySelector("#syncStatus"),
   todayTitle: document.querySelector("#todayTitle"),
   todayMeta: document.querySelector("#todayMeta"),
   userSelect: document.querySelector("#userSelect"),
+  editUserBtn: document.querySelector("#editUserBtn"),
   userNameInput: document.querySelector("#userNameInput"),
   renameUserBtn: document.querySelector("#renameUserBtn"),
   addGuestBtn: document.querySelector("#addGuestBtn"),
@@ -117,7 +169,19 @@ const els = {
   exerciseName: document.querySelector("#exerciseName"),
   exerciseMachine: document.querySelector("#exerciseMachine"),
   exerciseCategory: document.querySelector("#exerciseCategory"),
-  saveExerciseBtn: document.querySelector("#saveExerciseBtn")
+  saveExerciseBtn: document.querySelector("#saveExerciseBtn"),
+  userDialog: document.querySelector("#userDialog"),
+  confirmDialog: document.querySelector("#confirmDialog"),
+  confirmTitle: document.querySelector("#confirmTitle"),
+  confirmText: document.querySelector("#confirmText"),
+  confirmCancelBtn: document.querySelector("#confirmCancelBtn"),
+  confirmOkBtn: document.querySelector("#confirmOkBtn"),
+  mediaDialog: document.querySelector("#mediaDialog"),
+  mediaTitle: document.querySelector("#mediaTitle"),
+  mediaImage: document.querySelector("#mediaImage"),
+  mediaHint: document.querySelector("#mediaHint"),
+  mediaImageLink: document.querySelector("#mediaImageLink"),
+  mediaVideoLink: document.querySelector("#mediaVideoLink")
 };
 
 let state = {
@@ -159,42 +223,81 @@ function loadLocal(key, fallback) {
 }
 
 function normalizeState() {
+  let changed = false;
   if (state.users.includes("David")) {
     state.users = state.users.map(user => user === "David" ? "Dima" : user);
     if (state.selectedUser === "David") state.selectedUser = "Dima";
+    changed = true;
   }
   DEFAULT_USERS.forEach(user => {
-    if (!state.users.includes(user)) state.users.push(user);
+    if (!state.users.includes(user)) {
+      state.users.push(user);
+      changed = true;
+    }
   });
   if (!state.programsByUser || Array.isArray(state.programsByUser)) {
     state.programsByUser = structuredClone(DEFAULT_PROGRAMS_BY_USER);
+    changed = true;
   }
   if (state.program) {
     state.programsByUser.Dima = state.program;
     delete state.program;
+    changed = true;
   }
   Object.entries(DEFAULT_PROGRAMS_BY_USER).forEach(([user, program]) => {
-    if (!state.programsByUser[user]?.length) state.programsByUser[user] = structuredClone(program);
+    if (!state.programsByUser[user]?.length) {
+      state.programsByUser[user] = structuredClone(program);
+      changed = true;
+    }
   });
   state.users.forEach(user => {
-    if (!state.programsByUser[user]) state.programsByUser[user] = structuredClone(DEFAULT_PROGRAM);
-    restoreEmptyDefaultDays(user);
+    if (!state.programsByUser[user]) {
+      state.programsByUser[user] = structuredClone(DEFAULT_PROGRAM);
+      changed = true;
+    }
+    if (restoreEmptyDefaultDays(user)) changed = true;
+    if (migrateProgramText(state.programsByUser[user])) changed = true;
   });
-  if (!state.users.includes(state.selectedUser)) state.selectedUser = state.users[0] || "Dima";
+  if (!state.users.includes(state.selectedUser)) {
+    state.selectedUser = state.users[0] || "Dima";
+    changed = true;
+  }
   if (!currentProgram().some(day => day.id === state.selectedDay)) {
     state.selectedDay = currentProgram()[0]?.id || "";
+    changed = true;
   }
+  state.needsSave = Boolean(state.needsSave || changed);
+}
+
+function migrateProgramText(program) {
+  let changed = false;
+  program.forEach(day => {
+    const nextDayName = TEXT_MIGRATIONS.get(day.name) || day.name;
+    if (nextDayName !== day.name) changed = true;
+    day.name = nextDayName;
+    day.exercises.forEach(exercise => {
+      const nextName = TEXT_MIGRATIONS.get(exercise.name) || exercise.name;
+      const nextMachine = TEXT_MIGRATIONS.get(exercise.machine) || exercise.machine;
+      if (nextName !== exercise.name || nextMachine !== exercise.machine) changed = true;
+      exercise.name = nextName;
+      exercise.machine = nextMachine;
+    });
+  });
+  return changed;
 }
 
 function restoreEmptyDefaultDays(user) {
+  let changed = false;
   const defaults = DEFAULT_PROGRAMS_BY_USER[user] || DEFAULT_PROGRAM;
   const program = state.programsByUser[user];
   program.forEach((day, index) => {
     const defaultDay = defaults.find(item => item.id === day.id) || defaults[index];
     if (defaultDay && (!day.exercises || day.exercises.length === 0)) {
       day.exercises = structuredClone(defaultDay.exercises);
+      changed = true;
     }
   });
+  return changed;
 }
 
 function saveLocal() {
@@ -248,15 +351,15 @@ async function syncFromCloud() {
         onlineReady: true
       };
       normalizeState();
-      if (cloudPayload.needsSave) await syncToCloud();
+      if (cloudPayload.needsSave || state.needsSave) await syncToCloud();
     } else {
       await syncToCloud();
       state.onlineReady = true;
     }
-    status("Online shared", "online");
+    status("Онлайн-синхронизация", "online");
   } catch (error) {
     state.onlineReady = false;
-    status("Local until Supabase", "local");
+    status("Локально до Supabase", "local");
   }
   render();
 }
@@ -283,10 +386,11 @@ async function syncToCloud() {
       headers: { Prefer: "resolution=merge-duplicates,return=representation" }
     });
     state.onlineReady = true;
-    status("Online shared", "online");
+    state.needsSave = false;
+    status("Онлайн-синхронизация", "online");
   } catch {
     state.onlineReady = false;
-    status("Saved locally", "local");
+    status("Сохранено локально", "local");
   }
 }
 
@@ -331,6 +435,14 @@ function status(text, mode) {
   els.syncStatus.className = `sync-pill ${mode}`;
 }
 
+function sessionLabel(statusValue) {
+  return {
+    active: "активна",
+    completed: "завершена",
+    skipped: "пропущена"
+  }[statusValue] || statusValue;
+}
+
 function currentProgram() {
   return state.programsByUser[state.selectedUser] || state.programsByUser.Dima || DEFAULT_PROGRAM;
 }
@@ -373,8 +485,12 @@ function finishSession() {
   persist();
 }
 
-function skipDay() {
-  if (!confirm(`Skip "${currentDay().name}" for ${state.selectedUser}?`)) return;
+async function skipDay() {
+  const confirmed = await confirmAction({
+    title: "Пропустить день?",
+    text: `Записать "${currentDay().name}" для ${state.selectedUser} как пропущенный день?`
+  });
+  if (!confirmed) return;
   const day = currentDay();
   state.sessions.unshift({
     id: crypto.randomUUID(),
@@ -407,6 +523,33 @@ function persistWithTransition() {
   persist();
 }
 
+function confirmAction({ title, text, okText = "Подтвердить" }) {
+  return new Promise(resolve => {
+    els.confirmTitle.textContent = title;
+    els.confirmText.textContent = text;
+    els.confirmOkBtn.textContent = okText;
+    const cleanup = () => {
+      els.confirmOkBtn.removeEventListener("click", onOk);
+      els.confirmCancelBtn.removeEventListener("click", onCancel);
+      els.confirmDialog.removeEventListener("cancel", onCancel);
+    };
+    const onOk = () => {
+      cleanup();
+      els.confirmDialog.close();
+      resolve(true);
+    };
+    const onCancel = () => {
+      cleanup();
+      els.confirmDialog.close();
+      resolve(false);
+    };
+    els.confirmOkBtn.addEventListener("click", onOk);
+    els.confirmCancelBtn.addEventListener("click", onCancel);
+    els.confirmDialog.addEventListener("cancel", onCancel);
+    els.confirmDialog.showModal();
+  });
+}
+
 function render() {
   renderUsers();
   renderDays();
@@ -427,7 +570,7 @@ function renderUsers() {
 function renderDays() {
   const day = currentDay();
   els.todayTitle.textContent = day.name;
-  els.todayMeta.textContent = `${day.exercises.length} exercises · ${state.selectedUser}`;
+  els.todayMeta.textContent = `${day.exercises.length} упражнений · ${state.selectedUser}`;
   els.daySwitch.innerHTML = currentProgram().map(programDay => {
     const active = programDay.id === state.selectedDay ? "active" : "";
     return `<button class="tab day-btn ${active}" data-day="${programDay.id}" type="button">${programDay.name}</button>`;
@@ -436,8 +579,8 @@ function renderDays() {
 
 function renderWorkout() {
   const session = currentSession();
-  els.sessionState.textContent = session ? `${session.status} · ${session.user}` : "Not started";
-  els.startSessionBtn.textContent = session ? "Finish session" : "Start session";
+  els.sessionState.textContent = session ? `${sessionLabel(session.status)} · ${session.user}` : "Не начата";
+  els.startSessionBtn.textContent = session ? "Завершить тренировку" : "Начать тренировку";
   const exercises = session?.exercises || currentDay().exercises;
   els.exerciseList.innerHTML = exercises.map((exercise, index) => exerciseCard(exercise, index, Boolean(session))).join("");
 }
@@ -446,9 +589,9 @@ function exerciseCard(exercise, index, hasSession) {
   const sets = exercise.sets.map((set, setIndex) => `
     <div class="set-row ${set.done ? "done" : ""}" data-exercise="${exercise.id}" data-set="${set.id}">
       <div class="set-number">${setIndex + 1}</div>
-      <input inputmode="decimal" aria-label="Weight" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="kg">
-      <input inputmode="numeric" aria-label="Reps" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="reps">
-      <button class="ghost" data-action="toggle-set" type="button">${set.done ? "Done" : "Mark"}</button>
+      <input inputmode="decimal" aria-label="Вес" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="кг">
+      <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
+      <button class="ghost" data-action="toggle-set" type="button">${set.done ? "Готово" : "Отметить"}</button>
     </div>
   `).join("");
 
@@ -459,14 +602,15 @@ function exerciseCard(exercise, index, hasSession) {
           <span class="machine-icon">${CATEGORY_LABELS[exercise.category] || "EX"}</span>
           <div>
             <h3>${escapeHtml(exercise.name)}</h3>
-            <p class="muted">${escapeHtml(exercise.machine || "No note")}</p>
+            <p class="muted">${escapeHtml(exercise.machine || "Без заметки")}</p>
           </div>
         </div>
         <div class="exercise-actions">
-          <button class="ghost" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button">Up</button>
-          <button class="ghost" data-action="move-down" type="button">Down</button>
-          <button class="ghost" data-action="replace" type="button">${hasSession ? "Replace today" : "Edit"}</button>
-          ${hasSession ? `<button class="ghost danger" data-action="skip-exercise" type="button">Skip</button>` : ""}
+          <button class="ghost media-trigger" data-action="media" type="button">Фото</button>
+          <button class="ghost" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button">Вверх</button>
+          <button class="ghost" data-action="move-down" type="button">Вниз</button>
+          <button class="ghost" data-action="replace" type="button">${hasSession ? "Заменить" : "Редактировать"}</button>
+          ${hasSession ? `<button class="ghost danger" data-action="skip-exercise" type="button">Пропустить</button>` : ""}
         </div>
       </div>
       <div class="sets">${sets}</div>
@@ -476,7 +620,7 @@ function exerciseCard(exercise, index, hasSession) {
 
 function renderHistory() {
   if (!state.sessions.length) {
-    els.historyList.innerHTML = `<div class="empty">No shared sessions yet.</div>`;
+    els.historyList.innerHTML = `<div class="empty">Общих тренировок пока нет.</div>`;
     return;
   }
   els.historyList.innerHTML = state.sessions.slice(0, 20).map(session => {
@@ -489,8 +633,8 @@ function renderHistory() {
           <p class="muted">${new Date(session.date).toLocaleString("ru-RU")} · ${escapeHtml(session.user)}</p>
         </div>
         <div class="history-actions">
-          <span class="badge">${session.status} · ${Math.round(volume)} kg</span>
-          ${canCopy ? `<button class="ghost" data-copy-session="${session.id}" type="button">Copy</button>` : ""}
+          <span class="badge">${sessionLabel(session.status)} · ${Math.round(volume)} кг</span>
+          ${canCopy ? `<button class="ghost" data-copy-session="${session.id}" type="button">Скопировать</button>` : ""}
         </div>
       </div>
     `;
@@ -521,7 +665,7 @@ function formatSessionText(session) {
     const sets = summarySets(exercise);
     if (!sets.length) return;
     const setText = sets.map(set => {
-      const weight = set.weight ? `${set.weight}kg` : "bodyweight";
+      const weight = set.weight ? `${set.weight}кг` : "свой вес (bodyweight)";
       const reps = set.reps ? `x ${set.reps}` : "";
       return `${weight} ${reps}`.trim();
     }).join(", ");
@@ -529,7 +673,7 @@ function formatSessionText(session) {
   });
 
   lines.push("");
-  lines.push(`Volume: ${Math.round(sessionVolume(session))} kg`);
+  lines.push(`Объем (Volume): ${Math.round(sessionVolume(session))} кг`);
   return lines.join("\n");
 }
 
@@ -552,9 +696,9 @@ async function copySession(sessionId) {
   }
   const button = document.querySelector(`[data-copy-session="${sessionId}"]`);
   if (button) {
-    button.textContent = "Copied";
+    button.textContent = "Скопировано";
     setTimeout(() => {
-      button.textContent = "Copy";
+      button.textContent = "Скопировать";
     }, 1400);
   }
 }
@@ -581,9 +725,9 @@ function renderProgress() {
   const best = Math.max(0, ...points.map(point => point.topWeight));
   const totalVolume = points.reduce((sum, point) => sum + point.volume, 0);
   els.statsGrid.innerHTML = [
-    stat("Sessions", points.length),
-    stat("Best weight", `${best} kg`),
-    stat("Total volume", `${Math.round(totalVolume)} kg`)
+    stat("Тренировки", points.length),
+    stat("Лучший вес", `${best} кг`),
+    stat("Общий объем", `${Math.round(totalVolume)} кг`)
   ].join("");
 }
 
@@ -609,7 +753,7 @@ function drawChart(points) {
   if (!points.length) {
     ctx.fillStyle = "#9ca6a7";
     ctx.font = "24px sans-serif";
-    ctx.fillText("No progress data yet", 46, 190);
+    ctx.fillText("Пока нет данных", 46, 190);
     return;
   }
   const max = Math.max(...points.map(point => point.topWeight), 1);
@@ -643,8 +787,8 @@ function renderProgramEditor() {
       <div class="panel-head day-editor-head">
         <input class="day-name-input" value="${escapeHtml(day.name)}" data-rename-day="${day.id}" aria-label="Training day name">
         <div class="day-editor-actions">
-          <span class="badge">${day.exercises.length} exercises</span>
-          <button class="ghost danger" data-delete-day="${day.id}" type="button">Delete</button>
+          <span class="badge">${day.exercises.length} упражнений</span>
+          <button class="ghost danger" data-delete-day="${day.id}" type="button">Удалить</button>
         </div>
       </div>
       <div class="day-switch">
@@ -652,6 +796,31 @@ function renderProgramEditor() {
       </div>
     </div>
   `).join("");
+}
+
+function openUserDialog() {
+  els.userNameInput.value = state.selectedUser;
+  els.userDialog.showModal();
+}
+
+function openMediaDialog(exercise) {
+  if (!exercise) return;
+  const query = cleanExerciseQuery(exercise.name);
+  const imageUrl = `https://source.unsplash.com/900x600/?${encodeURIComponent(`${query},gym exercise`)}`;
+  const imageSearch = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${query} exercise form`)}`;
+  const videoSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${query} exercise technique`)}`;
+  els.mediaTitle.textContent = exercise.name;
+  els.mediaImage.src = imageUrl;
+  els.mediaImage.alt = exercise.name;
+  els.mediaHint.textContent = "Превью может быть примерным. Для точной техники открой картинки или видео по названию упражнения.";
+  els.mediaImageLink.href = imageSearch;
+  els.mediaVideoLink.href = videoSearch;
+  els.mediaDialog.showModal();
+}
+
+function cleanExerciseQuery(name) {
+  const english = name.match(/\(([^)]+)\)/)?.[1];
+  return english || name.replace(/\([^)]*\)/g, "").trim();
 }
 
 function activeExerciseList() {
@@ -669,7 +838,7 @@ function mutateExercise(exerciseId, callback) {
 function openExerciseDialog(exercise = null, programDayId = null) {
   state.editingExerciseId = exercise?.id || null;
   state.editingProgramDayId = programDayId;
-  els.dialogTitle.textContent = exercise ? "Edit exercise" : "Add exercise";
+  els.dialogTitle.textContent = exercise ? "Редактировать упражнение" : "Добавить упражнение";
   els.exerciseName.value = exercise?.name || "";
   els.exerciseMachine.value = exercise?.machine || "";
   els.exerciseCategory.value = exercise?.category || "chest";
@@ -710,9 +879,13 @@ function saveExerciseFromDialog() {
 
 function renameCurrentUser() {
   const nextName = els.userNameInput.value.trim();
-  if (!nextName || nextName === state.selectedUser) return;
+  if (!nextName || nextName === state.selectedUser) {
+    els.userDialog.close();
+    return;
+  }
   if (state.users.includes(nextName)) {
     state.selectedUser = nextName;
+    els.userDialog.close();
     persist();
     return;
   }
@@ -724,21 +897,32 @@ function renameCurrentUser() {
     if (session.user === oldName) session.user = nextName;
   });
   state.selectedUser = nextName;
+  els.userDialog.close();
   persist();
 }
 
-function deleteCurrentUser() {
+async function deleteCurrentUser() {
   if (state.users.length <= 1) {
-    alert("At least one user must stay.");
+    await confirmAction({
+      title: "Нельзя удалить",
+      text: "Должен остаться хотя бы один пользователь.",
+      okText: "Понятно"
+    });
     return;
   }
-  if (!confirm(`Delete user "${state.selectedUser}" and their program? History will stay.`)) return;
+  const confirmed = await confirmAction({
+    title: `Удалить ${state.selectedUser}?`,
+    text: "Пользователь и его программа исчезнут из списка. История тренировок останется.",
+    okText: "Удалить"
+  });
+  if (!confirmed) return;
   const deletedUser = state.selectedUser;
   state.users = state.users.filter(user => user !== deletedUser);
   delete state.programsByUser[deletedUser];
   if (currentSession()?.user === deletedUser) state.currentSessionId = "";
   state.selectedUser = state.users[0];
   state.selectedDay = currentProgram()[0]?.id || "";
+  els.userDialog.close();
   persist();
 }
 
@@ -758,29 +942,38 @@ function addGuestUser() {
 }
 
 function addTrainingDay() {
-  const name = prompt("Training day name", "New training day")?.trim();
+  const name = prompt("Название тренировочного дня", "Новый день (New day)")?.trim();
   if (!name) return;
   const id = `day-${crypto.randomUUID()}`;
   currentProgram().push({
     id,
     name,
     exercises: [
-      item(`exercise-${crypto.randomUUID()}`, "New exercise", "", [12, 12, 12], "Edit me", "legs")
+      item(`exercise-${crypto.randomUUID()}`, "Новое упражнение (New exercise)", "", [12, 12, 12], "Отредактируй меня (Edit me)", "legs")
     ]
   });
   state.selectedDay = id;
   persistWithTransition();
 }
 
-function deleteTrainingDay(dayId) {
+async function deleteTrainingDay(dayId) {
   const program = currentProgram();
   const day = program.find(item => item.id === dayId);
   if (!day) return;
   if (program.length <= 1) {
-    alert("At least one training day must stay.");
+    await confirmAction({
+      title: "Нельзя удалить",
+      text: "В программе должен остаться хотя бы один тренировочный день.",
+      okText: "Понятно"
+    });
     return;
   }
-  if (!confirm(`Delete "${day.name}" for ${state.selectedUser}?`)) return;
+  const confirmed = await confirmAction({
+    title: "Удалить день?",
+    text: `Удалить "${day.name}" из программы пользователя ${state.selectedUser}?`,
+    okText: "Удалить"
+  });
+  if (!confirmed) return;
   const index = program.findIndex(item => item.id === dayId);
   program.splice(index, 1);
   if (state.selectedDay === dayId) state.selectedDay = program[0].id;
@@ -797,7 +990,7 @@ function escapeHtml(value) {
   })[char]);
 }
 
-document.addEventListener("click", event => {
+document.addEventListener("click", async event => {
   const tab = event.target.closest(".tab[data-view]");
   if (tab) {
     document.querySelectorAll(".tab[data-view]").forEach(item => item.classList.remove("active"));
@@ -839,8 +1032,16 @@ document.addEventListener("click", event => {
       if (index < list.length - 1) [list[index + 1], list[index]] = [list[index], list[index + 1]];
       persistWithTransition();
     }
+    if (action === "media") {
+      openMediaDialog(activeExerciseList().find(exercise => exercise.id === exerciseId));
+    }
     if (action === "skip-exercise") {
-      if (!confirm("Skip this exercise for the active session?")) return;
+      const confirmed = await confirmAction({
+        title: "Пропустить упражнение?",
+        text: "Упражнение уберется только из активной тренировки. Шаблон программы не изменится.",
+        okText: "Пропустить"
+      });
+      if (!confirmed) return;
       mutateExercise(exerciseId, (list, index) => list.splice(index, 1));
     }
     if (action === "replace") {
@@ -899,6 +1100,7 @@ els.userSelect.addEventListener("change", () => {
   }
   persist();
 });
+els.editUserBtn.addEventListener("click", openUserDialog);
 els.renameUserBtn.addEventListener("click", renameCurrentUser);
 els.addGuestBtn.addEventListener("click", addGuestUser);
 els.deleteUserBtn.addEventListener("click", deleteCurrentUser);
@@ -909,8 +1111,13 @@ els.progressExercise.addEventListener("change", renderProgress);
 els.addExerciseBtn.addEventListener("click", () => openExerciseDialog());
 els.addDayBtn.addEventListener("click", addTrainingDay);
 els.saveExerciseBtn.addEventListener("click", saveExerciseFromDialog);
-els.resetProgramBtn.addEventListener("click", () => {
-  if (!confirm(`Reset program for ${state.selectedUser}?`)) return;
+els.resetProgramBtn.addEventListener("click", async () => {
+  const confirmed = await confirmAction({
+    title: "Сбросить программу?",
+    text: `Вернуть дефолтную программу для ${state.selectedUser}? Текущие правки программы будут заменены.`,
+    okText: "Сбросить"
+  });
+  if (!confirmed) return;
   state.programsByUser[state.selectedUser] = structuredClone(DEFAULT_PROGRAMS_BY_USER[state.selectedUser] || DEFAULT_PROGRAM);
   state.currentSessionId = "";
   state.selectedDay = currentProgram()[0]?.id || "";

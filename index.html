@@ -12,62 +12,58 @@
     <main class="shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Online-first workout log</p>
+          <p class="eyebrow">Онлайн-дневник тренировок</p>
           <h1>Reform Training</h1>
         </div>
-        <div class="sync-pill" id="syncStatus">Connecting</div>
+        <div class="sync-pill" id="syncStatus">Подключение</div>
       </header>
 
       <section class="hero">
         <div>
-          <p class="hero-kicker">Today</p>
+          <p class="hero-kicker">Сегодня</p>
           <h2 id="todayTitle">Fullbody 1</h2>
-          <p id="todayMeta">Shared log for your gym crew.</p>
+          <p id="todayMeta">Общий журнал для тренировок.</p>
         </div>
         <div class="hero-actions">
-          <label class="field compact">
-            <span>User</span>
-            <select id="userSelect"></select>
-          </label>
-          <label class="field compact">
-            <span>Rename selected user</span>
-            <input id="userNameInput" placeholder="User name">
-          </label>
-          <div class="user-actions">
-            <button class="ghost" id="renameUserBtn" type="button">Save name</button>
-            <button class="ghost" id="addGuestBtn" type="button">Add guest</button>
-            <button class="ghost danger" id="deleteUserBtn" type="button">Delete user</button>
+          <div class="user-picker">
+            <label class="field compact">
+              <span>Пользователь</span>
+              <div class="select-inline">
+                <select id="userSelect"></select>
+                <button class="icon-btn" id="editUserBtn" type="button" aria-label="Редактировать пользователя" title="Редактировать">✎</button>
+              </div>
+            </label>
           </div>
-          <button class="primary" id="startSessionBtn" type="button">Start session</button>
+          <button class="primary" id="startSessionBtn" type="button">Начать тренировку</button>
         </div>
       </section>
 
       <nav class="tabs" aria-label="Main views">
-        <button class="tab active" data-view="workout" type="button">Workout</button>
-        <button class="tab" data-view="history" type="button">History</button>
-        <button class="tab" data-view="progress" type="button">Progress</button>
-        <button class="tab" data-view="settings" type="button">Program</button>
+        <button class="tab active" data-view="workout" type="button">Тренировка</button>
+        <button class="tab" data-view="history" type="button">История</button>
+        <button class="tab" data-view="progress" type="button">Прогресс</button>
+        <button class="tab" data-view="settings" type="button">Программа</button>
       </nav>
 
       <section class="layout">
         <aside class="sidebar">
           <div class="panel">
             <div class="panel-head">
-              <h3>Training day</h3>
+              <h3>День тренировки</h3>
             </div>
             <div class="day-switch" id="daySwitch"></div>
           </div>
 
           <div class="panel">
             <div class="panel-head">
-              <h3>Session</h3>
+              <h3>Сессия</h3>
             </div>
             <div class="session-card">
               <div>
-                <span class="muted">Status</span>
-                <strong id="sessionState">Not started</strong>
+                <span class="muted">Статус</span>
+                <strong id="sessionState">Не начата</strong>
               </div>
-              <button class="ghost danger" id="skipDayBtn" type="button">Skip day</button>
+              <button class="ghost danger" id="skipDayBtn" type="button">Пропустить</button>
             </div>
           </div>
         </aside>
@@ -75,23 +71,23 @@
         <section class="content">
           <section class="view active" id="workoutView">
             <div class="toolbar">
-              <h3>Exercises</h3>
-              <button class="ghost" id="addExerciseBtn" type="button">Add exercise</button>
+              <h3>Упражнения</h3>
+              <button class="ghost" id="addExerciseBtn" type="button">Добавить</button>
             </div>
             <div class="exercise-list" id="exerciseList"></div>
           </section>
 
           <section class="view" id="historyView">
             <div class="toolbar">
-              <h3>Shared history</h3>
-              <button class="ghost" id="refreshBtn" type="button">Refresh</button>
+              <h3>Общая история</h3>
+              <button class="ghost" id="refreshBtn" type="button">Обновить</button>
             </div>
             <div class="history-list" id="historyList"></div>
           </section>
 
           <section class="view" id="progressView">
             <div class="toolbar">
-              <h3>Progress</h3>
+              <h3>Прогресс</h3>
               <select id="progressExercise"></select>
             </div>
             <div class="chart-card">
@@ -102,10 +98,10 @@
 
           <section class="view" id="settingsView">
             <div class="toolbar">
-              <h3>Program editor</h3>
+              <h3>Редактор программы</h3>
               <div class="toolbar-actions">
-                <button class="ghost" id="addDayBtn" type="button">Add day</button>
-                <button class="ghost" id="resetProgramBtn" type="button">Reset current user</button>
+                <button class="ghost" id="addDayBtn" type="button">Добавить день</button>
+                <button class="ghost" id="resetProgramBtn" type="button">Сбросить программу</button>
               </div>
             </div>
             <div class="editor-list" id="programEditor"></div>
@@ -116,31 +112,77 @@
 
     <dialog id="exerciseDialog">
       <form method="dialog" class="modal">
-        <h3 id="dialogTitle">Exercise</h3>
+        <h3 id="dialogTitle">Упражнение</h3>
         <label class="field">
-          <span>Name</span>
+          <span>Название</span>
           <input id="exerciseName" required>
         </label>
         <label class="field">
-          <span>Machine / note</span>
+          <span>Тренажер / заметка</span>
           <input id="exerciseMachine">
         </label>
         <label class="field">
-          <span>Category</span>
+          <span>Категория</span>
           <select id="exerciseCategory">
-            <option value="chest">Chest</option>
-            <option value="back">Back</option>
-            <option value="shoulders">Shoulders</option>
-            <option value="arms">Arms</option>
-            <option value="legs">Legs</option>
-            <option value="calves">Calves</option>
-            <option value="glutes">Glutes</option>
-            <option value="core">Core</option>
+            <option value="chest">Грудь (Chest)</option>
+            <option value="back">Спина (Back)</option>
+            <option value="shoulders">Плечи (Shoulders)</option>
+            <option value="arms">Руки (Arms)</option>
+            <option value="legs">Ноги (Legs)</option>
+            <option value="calves">Икры (Calves)</option>
+            <option value="glutes">Ягодицы (Glutes)</option>
+            <option value="core">Кор (Core)</option>
           </select>
         </label>
         <div class="modal-actions">
-          <button class="ghost" value="cancel" type="submit">Cancel</button>
-          <button class="primary" id="saveExerciseBtn" value="default" type="button">Save</button>
+          <button class="ghost" value="cancel" type="submit">Отмена</button>
+          <button class="primary" id="saveExerciseBtn" value="default" type="button">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="userDialog">
+      <form method="dialog" class="modal">
+        <h3>Пользователь</h3>
+        <label class="field">
+          <span>Имя</span>
+          <input id="userNameInput" placeholder="Имя пользователя">
+        </label>
+        <div class="modal-actions spread">
+          <button class="ghost" id="addGuestBtn" type="button">Добавить гостя</button>
+          <button class="ghost danger" id="deleteUserBtn" type="button">Удалить</button>
+        </div>
+        <div class="modal-actions">
+          <button class="ghost" value="cancel" type="submit">Отмена</button>
+          <button class="primary" id="renameUserBtn" type="button">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="confirmDialog">
+      <form method="dialog" class="modal confirm-modal">
+        <h3 id="confirmTitle">Подтвердить действие</h3>
+        <p id="confirmText" class="confirm-text"></p>
+        <div class="modal-actions">
+          <button class="ghost" id="confirmCancelBtn" value="cancel" type="button">Отмена</button>
+          <button class="primary danger-fill" id="confirmOkBtn" value="default" type="button">Подтвердить</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="mediaDialog">
+      <form method="dialog" class="modal media-modal">
+        <div class="panel-head">
+          <h3 id="mediaTitle">Фото упражнения</h3>
+          <button class="ghost" value="cancel" type="submit">Закрыть</button>
+        </div>
+        <div class="media-frame">
+          <img id="mediaImage" alt="">
+        </div>
+        <p class="muted" id="mediaHint"></p>
+        <div class="media-links">
+          <a class="ghost" id="mediaImageLink" target="_blank" rel="noreferrer">Google Images</a>
+          <a class="ghost" id="mediaVideoLink" target="_blank" rel="noreferrer">YouTube</a>
         </div>
       </form>
     </dialog>

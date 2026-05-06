@@ -1,4 +1,4 @@
-const CACHE = "reform-training-v4";
+const CACHE = "reform-training-v5";
 const ASSETS = [
   ".",
   "index.html",
