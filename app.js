@@ -499,8 +499,13 @@ function renderHistory() {
 
 function sessionVolume(session) {
   return session.exercises.reduce((sum, exercise) => {
-    return sum + exercise.sets.reduce((setSum, set) => setSum + Number(set.weight || 0) * Number(set.reps || 0), 0);
+    return sum + summarySets(exercise).reduce((setSum, set) => setSum + Number(set.weight || 0) * Number(set.reps || 0), 0);
   }, 0);
+}
+
+function summarySets(exercise) {
+  const doneSets = exercise.sets.filter(set => set.done);
+  return doneSets.length ? doneSets : exercise.sets.filter(set => set.weight || set.reps);
 }
 
 function formatSessionText(session) {
@@ -513,8 +518,7 @@ function formatSessionText(session) {
   ];
 
   session.exercises.forEach(exercise => {
-    const doneSets = exercise.sets.filter(set => set.done);
-    const sets = doneSets.length ? doneSets : exercise.sets.filter(set => set.weight || set.reps);
+    const sets = summarySets(exercise);
     if (!sets.length) return;
     const setText = sets.map(set => {
       const weight = set.weight ? `${set.weight}kg` : "bodyweight";
