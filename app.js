@@ -70,6 +70,7 @@ const DEFAULT_DASHA_PROGRAM = [
 ];
 
 const DEFAULT_USERS = ["Dima", "Dasha", "Artem", "Danil", "Guest"];
+const APP_SCHEMA_VERSION = 4;
 const DEFAULT_PROGRAMS_BY_USER = {
   Dima: DEFAULT_PROGRAM,
   Artem: DEFAULT_PROGRAM,
@@ -235,17 +236,19 @@ async function syncFromCloud() {
   try {
     const rows = await api("workout_state?id=eq.reform&select=*");
     if (rows[0]?.payload) {
+      const cloudPayload = migrateCloudPayload(rows[0].payload);
       state = {
         ...state,
-        programsByUser: rows[0].payload.programsByUser || migrateProgramPayload(rows[0].payload.program),
-        sessions: rows[0].payload.sessions || state.sessions,
-        users: rows[0].payload.users?.length ? rows[0].payload.users : state.users,
-        selectedDay: rows[0].payload.selectedDay || state.selectedDay,
-        selectedUser: rows[0].payload.selectedUser || state.selectedUser,
-        currentSessionId: rows[0].payload.currentSessionId || "",
+        programsByUser: cloudPayload.programsByUser,
+        sessions: cloudPayload.sessions,
+        users: cloudPayload.users,
+        selectedDay: cloudPayload.selectedDay,
+        selectedUser: cloudPayload.selectedUser,
+        currentSessionId: cloudPayload.currentSessionId,
         onlineReady: true
       };
       normalizeState();
+      if (cloudPayload.needsSave) await syncToCloud();
     } else {
       await syncToCloud();
       state.onlineReady = true;
@@ -263,6 +266,7 @@ async function syncToCloud() {
   const payload = {
     id: "reform",
     payload: {
+      schemaVersion: APP_SCHEMA_VERSION,
       programsByUser: state.programsByUser,
       sessions: state.sessions,
       users: state.users,
@@ -284,6 +288,30 @@ async function syncToCloud() {
     state.onlineReady = false;
     status("Saved locally", "local");
   }
+}
+
+function migrateCloudPayload(payload) {
+  if (payload.schemaVersion !== APP_SCHEMA_VERSION) {
+    return {
+      schemaVersion: APP_SCHEMA_VERSION,
+      programsByUser: structuredClone(DEFAULT_PROGRAMS_BY_USER),
+      sessions: [],
+      users: structuredClone(DEFAULT_USERS),
+      selectedDay: "fullbody-1",
+      selectedUser: "Dima",
+      currentSessionId: "",
+      needsSave: true
+    };
+  }
+  return {
+    programsByUser: payload.programsByUser || migrateProgramPayload(payload.program),
+    sessions: payload.sessions || [],
+    users: payload.users?.length ? payload.users : structuredClone(DEFAULT_USERS),
+    selectedDay: payload.selectedDay || "fullbody-1",
+    selectedUser: payload.selectedUser || "Dima",
+    currentSessionId: payload.currentSessionId || "",
+    needsSave: false
+  };
 }
 
 function migrateProgramPayload(program) {
@@ -452,19 +480,79 @@ function renderHistory() {
     return;
   }
   els.historyList.innerHTML = state.sessions.slice(0, 20).map(session => {
-    const volume = session.exercises.reduce((sum, exercise) => {
-      return sum + exercise.sets.reduce((setSum, set) => setSum + Number(set.weight || 0) * Number(set.reps || 0), 0);
-    }, 0);
+    const volume = sessionVolume(session);
+    const canCopy = session.status === "completed" && session.exercises.length;
     return `
-      <div class="history-row">
+      <div class="history-row" data-session="${session.id}">
         <div>
           <strong>${escapeHtml(session.dayName)}</strong>
           <p class="muted">${new Date(session.date).toLocaleString("ru-RU")} · ${escapeHtml(session.user)}</p>
         </div>
-        <span class="badge">${session.status} · ${Math.round(volume)} kg</span>
+        <div class="history-actions">
+          <span class="badge">${session.status} · ${Math.round(volume)} kg</span>
+          ${canCopy ? `<button class="ghost" data-copy-session="${session.id}" type="button">Copy</button>` : ""}
+        </div>
       </div>
     `;
   }).join("");
+}
+
+function sessionVolume(session) {
+  return session.exercises.reduce((sum, exercise) => {
+    return sum + exercise.sets.reduce((setSum, set) => setSum + Number(set.weight || 0) * Number(set.reps || 0), 0);
+  }, 0);
+}
+
+function formatSessionText(session) {
+  const started = new Date(session.date).toLocaleString("ru-RU");
+  const finished = session.finishedAt ? new Date(session.finishedAt).toLocaleString("ru-RU") : "";
+  const lines = [
+    `${session.user} — ${session.dayName}`,
+    finished ? `${started} → ${finished}` : started,
+    ""
+  ];
+
+  session.exercises.forEach(exercise => {
+    const doneSets = exercise.sets.filter(set => set.done);
+    const sets = doneSets.length ? doneSets : exercise.sets.filter(set => set.weight || set.reps);
+    if (!sets.length) return;
+    const setText = sets.map(set => {
+      const weight = set.weight ? `${set.weight}kg` : "bodyweight";
+      const reps = set.reps ? `x ${set.reps}` : "";
+      return `${weight} ${reps}`.trim();
+    }).join(", ");
+    lines.push(`${exercise.name}: ${setText}`);
+  });
+
+  lines.push("");
+  lines.push(`Volume: ${Math.round(sessionVolume(session))} kg`);
+  return lines.join("\n");
+}
+
+async function copySession(sessionId) {
+  const session = state.sessions.find(item => item.id === sessionId);
+  if (!session) return;
+  const text = formatSessionText(session);
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+  const button = document.querySelector(`[data-copy-session="${sessionId}"]`);
+  if (button) {
+    button.textContent = "Copied";
+    setTimeout(() => {
+      button.textContent = "Copy";
+    }, 1400);
+  }
 }
 
 function renderProgressOptions() {
@@ -766,6 +854,11 @@ document.addEventListener("click", event => {
   const deleteDay = event.target.closest("[data-delete-day]");
   if (deleteDay) {
     deleteTrainingDay(deleteDay.dataset.deleteDay);
+  }
+
+  const copyButton = event.target.closest("[data-copy-session]");
+  if (copyButton) {
+    copySession(copyButton.dataset.copySession);
   }
 });
 
