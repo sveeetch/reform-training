@@ -195,6 +195,7 @@ let state = {
   editingProgramDayId: null,
   onlineReady: false
 };
+let syncTimer = null;
 
 applyUserFromUrl();
 normalizeState();
@@ -524,6 +525,21 @@ async function skipDay() {
 function persist() {
   saveLocal();
   render();
+  syncToCloud();
+}
+
+function scheduleSyncToCloud(delay = 2200) {
+  saveLocal();
+  window.clearTimeout(syncTimer);
+  syncTimer = window.setTimeout(() => {
+    syncToCloud();
+  }, delay);
+}
+
+function flushScheduledSync() {
+  if (!syncTimer) return;
+  window.clearTimeout(syncTimer);
+  syncTimer = null;
   syncToCloud();
 }
 
@@ -866,6 +882,12 @@ function mutateExercise(exerciseId, callback) {
   persist();
 }
 
+function updateSetField(exerciseId, setId, field, value) {
+  const exercise = activeExerciseList().find(item => item.id === exerciseId);
+  const set = exercise?.sets.find(item => item.id === setId);
+  if (set) set[field] = value;
+}
+
 function openExerciseDialog(exercise = null, programDayId = null) {
   state.editingExerciseId = exercise?.id || null;
   state.editingProgramDayId = programDayId;
@@ -1104,8 +1126,7 @@ document.addEventListener("input", event => {
     const day = currentProgram().find(item => item.id === dayName.dataset.renameDay);
     if (day) {
       day.name = dayName.value;
-      saveLocal();
-      syncToCloud();
+      scheduleSyncToCloud();
       renderDays();
     }
     return;
@@ -1116,11 +1137,20 @@ document.addEventListener("input", event => {
   const row = input.closest("[data-exercise][data-set]");
   const exerciseId = row.dataset.exercise;
   const setId = row.dataset.set;
-  mutateExercise(exerciseId, list => {
-    const exercise = list.find(item => item.id === exerciseId);
-    const set = exercise.sets.find(item => item.id === setId);
-    set[input.dataset.field] = input.value;
-  });
+  updateSetField(exerciseId, setId, input.dataset.field, input.value);
+  scheduleSyncToCloud();
+});
+
+document.addEventListener("change", event => {
+  if (event.target.closest(".set-row input") || event.target.closest("[data-rename-day]")) {
+    flushScheduledSync();
+  }
+});
+
+document.addEventListener("focusout", event => {
+  if (event.target.closest(".set-row input") || event.target.closest("[data-rename-day]")) {
+    flushScheduledSync();
+  }
 });
 
 els.userSelect.addEventListener("change", () => {

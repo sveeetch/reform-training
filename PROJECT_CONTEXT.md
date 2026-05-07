@@ -1,6 +1,6 @@
 # Reform Training Context
 
-Last updated: 2026-05-06, update 3
+Last updated: 2026-05-07, update 4
 
 ## What This Is
 
@@ -52,6 +52,7 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 - Set completion uses a compact check button (`✓`). The next pending set in an active session is accent-highlighted; completed set rows are visually muted, like crossed-off work.
 - Active session finish button uses a secondary style so it does not look like the primary “start” action.
 - Service worker registration calls `registration.update()`, reloads on `controllerchange`, and `sw.js` uses `skipWaiting()` plus `clients.claim()` for faster deploy pickup.
+- Weight/reps inputs must not call full `persist()` on each keystroke. They update in-memory state and `localStorage` immediately, then debounce Supabase sync; blur/change flushes pending sync. This prevents mobile keyboards from closing after every typed character.
 - Service worker cache currently must be bumped when deploying visible app changes.
 
 ## Important UX Preferences
