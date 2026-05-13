@@ -151,6 +151,9 @@ const els = {
   addGuestBtn: document.querySelector("#addGuestBtn"),
   deleteUserBtn: document.querySelector("#deleteUserBtn"),
   startSessionBtn: document.querySelector("#startSessionBtn"),
+  bottomStartSessionBtn: document.querySelector("#bottomStartSessionBtn"),
+  finishWorkoutBtn: document.querySelector("#finishWorkoutBtn"),
+  workoutModeToggle: document.querySelector("#workoutModeToggle"),
   daySwitch: document.querySelector("#daySwitch"),
   sessionState: document.querySelector("#sessionState"),
   skipDayBtn: document.querySelector("#skipDayBtn"),
@@ -170,6 +173,9 @@ const els = {
   exerciseCategory: document.querySelector("#exerciseCategory"),
   exerciseIcon: document.querySelector("#exerciseIcon"),
   exerciseSetCount: document.querySelector("#exerciseSetCount"),
+  exercisePhoto: document.querySelector("#exercisePhoto"),
+  exercisePhotoPreview: document.querySelector("#exercisePhotoPreview"),
+  removeExercisePhotoBtn: document.querySelector("#removeExercisePhotoBtn"),
   saveExerciseBtn: document.querySelector("#saveExerciseBtn"),
   userDialog: document.querySelector("#userDialog"),
   confirmDialog: document.querySelector("#confirmDialog"),
@@ -192,12 +198,15 @@ let state = {
   selectedDay: loadLocal("reform-selected-day", "fullbody-1"),
   selectedUser: loadLocal("reform-user", DEFAULT_USERS[0]),
   currentSessionId: loadLocal("reform-current-session", ""),
+  workoutMode: loadLocal("reform-workout-mode", "list"),
+  stepExerciseId: loadLocal("reform-step-exercise", ""),
   editingExerciseId: null,
   editingProgramDayId: null,
+  pendingExercisePhoto: null,
+  removeExercisePhoto: false,
   onlineReady: false
 };
 let syncTimer = null;
-let swipeState = null;
 
 applyUserFromUrl();
 normalizeState();
@@ -368,6 +377,8 @@ function saveLocal() {
   localStorage.setItem("reform-selected-day", JSON.stringify(state.selectedDay));
   localStorage.setItem("reform-user", JSON.stringify(state.selectedUser));
   localStorage.setItem("reform-current-session", JSON.stringify(state.currentSessionId));
+  localStorage.setItem("reform-workout-mode", JSON.stringify(state.workoutMode));
+  localStorage.setItem("reform-step-exercise", JSON.stringify(state.stepExerciseId));
 }
 
 function supabaseConfig() {
@@ -534,6 +545,7 @@ function startSession() {
   };
   state.sessions.unshift(session);
   state.currentSessionId = session.id;
+  state.stepExerciseId = session.exercises[0]?.id || "";
   persist();
 }
 
@@ -543,6 +555,7 @@ function finishSession() {
   session.status = "completed";
   session.finishedAt = new Date().toISOString();
   state.currentSessionId = "";
+  state.stepExerciseId = "";
   persist();
 }
 
@@ -639,12 +652,7 @@ function render() {
 
 function updateAppChrome() {
   document.body.classList.toggle("session-active", Boolean(currentSession()));
-}
-
-function closeSwipeRows(exceptRow = null) {
-  document.querySelectorAll(".set-row.swipe-delete").forEach(row => {
-    if (row !== exceptRow) row.classList.remove("swipe-delete");
-  });
+  document.body.classList.toggle("step-mode", state.workoutMode === "step");
 }
 
 function setupSessionObserver() {
@@ -655,6 +663,15 @@ function setupSessionObserver() {
     document.body.classList.toggle("session-offscreen", !entry.isIntersecting);
   }, { threshold: 0.12 });
   observer.observe(panel);
+
+  const bottomActions = document.querySelector(".workout-bottom-actions");
+  if (bottomActions) {
+    const bottomObserver = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      document.body.classList.toggle("workout-bottom-visible", entry.isIntersecting);
+    }, { threshold: 0.15 });
+    bottomObserver.observe(bottomActions);
+  }
 }
 
 function renderUsers() {
@@ -679,11 +696,48 @@ function renderWorkout() {
   els.startSessionBtn.textContent = session ? "Завершить тренировку" : "Начать тренировку";
   els.startSessionBtn.classList.toggle("primary", !session);
   els.startSessionBtn.classList.toggle("secondary", Boolean(session));
+  els.bottomStartSessionBtn.hidden = Boolean(session);
+  els.finishWorkoutBtn.hidden = !session;
+  els.workoutModeToggle.hidden = !session;
+  els.workoutModeToggle.querySelectorAll("[data-workout-mode]").forEach(button => {
+    button.classList.toggle("active", button.dataset.workoutMode === state.workoutMode);
+  });
   const exercises = session?.exercises || currentDay().exercises;
-  els.exerciseList.innerHTML = exercises.map((exercise, index) => exerciseCard(exercise, index, Boolean(session))).join("");
+  if (session && state.workoutMode === "step") {
+    els.exerciseList.innerHTML = stepWorkout(session);
+  } else {
+    els.exerciseList.innerHTML = exercises.map((exercise, index) => exerciseCard(exercise, index, Boolean(session))).join("");
+  }
 }
 
-function exerciseCard(exercise, index, hasSession) {
+function stepWorkout(session) {
+  const exercises = session.exercises;
+  if (!exercises.length) return `<div class="empty">В этой тренировке пока нет упражнений.</div>`;
+  const index = currentStepIndex(exercises);
+  const exercise = exercises[index];
+  return `
+    <section class="step-workout" data-step-exercise="${exercise.id}">
+      <div class="step-topline">
+        <span class="badge">${index + 1} / ${exercises.length}</span>
+        <span class="muted">Step-by-step</span>
+      </div>
+      ${exerciseCard(exercise, index, true, { step: true })}
+      <div class="step-nav">
+        <button class="ghost" data-step-nav="prev" ${index === 0 ? "disabled" : ""} type="button">${iconSvg("up")}<span>Назад</span></button>
+        <button class="primary" data-step-nav="next" ${index === exercises.length - 1 ? "disabled" : ""} type="button"><span>Дальше</span>${iconSvg("down")}</button>
+      </div>
+    </section>
+  `;
+}
+
+function currentStepIndex(exercises) {
+  const selectedIndex = exercises.findIndex(exercise => exercise.id === state.stepExerciseId);
+  if (selectedIndex >= 0) return selectedIndex;
+  const firstPending = exercises.findIndex(exercise => exercise.sets.some(set => !set.done));
+  return firstPending >= 0 ? firstPending : 0;
+}
+
+function exerciseCard(exercise, index, hasSession, options = {}) {
   const nextPendingSetIndex = exercise.sets.findIndex(set => !set.done);
   const sets = exercise.sets.map((set, setIndex) => {
     const isNextPendingSet = hasSession && !set.done && setIndex === nextPendingSetIndex;
@@ -696,13 +750,12 @@ function exerciseCard(exercise, index, hasSession) {
       <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
       <button class="${checkClass}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">${iconSvg("check")}</button>
       ${hasSession ? `<button class="row-delete danger" data-action="delete-set" type="button" aria-label="Удалить подход">${iconSvg("trash")}</button>` : ""}
-      ${hasSession ? `<button class="set-delete" data-action="delete-set" type="button" aria-label="Удалить подход">${iconSvg("trash")}<span>Удалить</span></button>` : ""}
     </div>
   `;
   }).join("");
 
   return `
-    <article class="exercise-card" data-exercise="${exercise.id}">
+    <article class="exercise-card ${options.step ? "step-card" : ""}" data-exercise="${exercise.id}">
       <div class="exercise-head">
         <div class="exercise-title">
           <span class="machine-icon">${iconSvg(exercise.icon || ICON_BY_CATEGORY[exercise.category] || "machine", exercise.category)}</span>
@@ -721,6 +774,7 @@ function exerciseCard(exercise, index, hasSession) {
           ` : ""}
         </div>
       </div>
+      ${exercise.photo ? `<button class="exercise-photo-strip" data-action="media" type="button" aria-label="Открыть фото"><img src="${escapeHtml(exercise.photo)}" alt=""></button>` : ""}
       <div class="sets">${sets}</div>
       ${hasSession ? `<button class="add-set-btn" data-action="add-set" type="button">${iconSvg("plus")}<span>Добавить подход</span></button>` : ""}
     </article>
@@ -934,13 +988,15 @@ function openUserDialog() {
 function openMediaDialog(exercise) {
   if (!exercise) return;
   const query = cleanExerciseQuery(exercise.name);
-  const imageUrl = `https://source.unsplash.com/900x600/?${encodeURIComponent(`${query},gym exercise`)}`;
+  const imageUrl = exercise.photo || `https://source.unsplash.com/900x600/?${encodeURIComponent(`${query},gym exercise`)}`;
   const imageSearch = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(`${query} exercise form`)}`;
   const videoSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${query} exercise technique`)}`;
   els.mediaTitle.textContent = exercise.name;
   els.mediaImage.src = imageUrl;
   els.mediaImage.alt = exercise.name;
-  els.mediaHint.textContent = "Превью может быть примерным. Для точной техники открой картинки или видео по названию упражнения.";
+  els.mediaHint.textContent = exercise.photo
+    ? "Это твое сохраненное фото тренажера."
+    : "Превью может быть примерным. Для точной техники открой картинки или видео по названию упражнения.";
   els.mediaImageLink.href = imageSearch;
   els.mediaVideoLink.href = videoSearch;
   els.mediaDialog.showModal();
@@ -984,25 +1040,67 @@ function resizedSets(existingSets, count) {
   return sets.slice(0, nextCount);
 }
 
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function resizeImageDataUrl(file, maxSize = 900, quality = 0.82) {
+  const dataUrl = await readImageFile(file);
+  const image = new Image();
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+    image.src = dataUrl;
+  });
+  const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(image.width * scale));
+  canvas.height = Math.max(1, Math.round(image.height * scale));
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
 function openExerciseDialog(exercise = null, programDayId = null) {
   state.editingExerciseId = exercise?.id || null;
   state.editingProgramDayId = programDayId;
+  state.pendingExercisePhoto = null;
+  state.removeExercisePhoto = false;
   els.dialogTitle.textContent = exercise ? "Редактировать упражнение" : "Добавить упражнение";
   els.exerciseName.value = exercise?.name || "";
   els.exerciseMachine.value = exercise?.machine || "";
   els.exerciseCategory.value = exercise?.category || "chest";
   els.exerciseIcon.value = exercise?.icon || ICON_BY_CATEGORY[exercise?.category || "chest"] || "machine";
   els.exerciseSetCount.value = String(exercise?.sets?.length || 3);
+  els.exercisePhoto.value = "";
+  renderExercisePhotoPreview(exercise?.photo || "");
   els.dialog.showModal();
 }
 
+function renderExercisePhotoPreview(photo) {
+  els.exercisePhotoPreview.innerHTML = photo
+    ? `<img src="${escapeHtml(photo)}" alt="Фото тренажера"><span class="muted">Фото сохранено</span>`
+    : `<span class="muted">Фото пока не добавлено</span>`;
+  els.removeExercisePhotoBtn.hidden = !photo;
+}
+
 function saveExerciseFromDialog() {
+  const existingExercise = state.editingProgramDayId
+    ? currentProgram().find(day => day.id === state.editingProgramDayId)?.exercises.find(exercise => exercise.id === state.editingExerciseId)
+    : activeExerciseList().find(exercise => exercise.id === state.editingExerciseId);
+  const existingPhoto = existingExercise?.photo || "";
   const payload = {
     id: state.editingExerciseId || crypto.randomUUID(),
     name: els.exerciseName.value.trim(),
     machine: els.exerciseMachine.value.trim(),
     category: els.exerciseCategory.value,
     icon: els.exerciseIcon.value || ICON_BY_CATEGORY[els.exerciseCategory.value] || "machine",
+    photo: state.removeExercisePhoto ? "" : (state.pendingExercisePhoto || existingPhoto),
     sets: resizedSets(null, els.exerciseSetCount.value)
   };
   if (!payload.name) return;
@@ -1166,7 +1264,6 @@ function iconSvg(name, label = "") {
 }
 
 document.addEventListener("click", async event => {
-  if (!event.target.closest(".set-row")) closeSwipeRows();
   const tab = event.target.closest(".tab[data-view]");
   if (tab) {
     document.querySelectorAll(".tab[data-view]").forEach(item => item.classList.remove("active"));
@@ -1174,6 +1271,26 @@ document.addEventListener("click", async event => {
     tab.classList.add("active");
     document.querySelector(`#${tab.dataset.view}View`).classList.add("active");
     document.body.dataset.view = tab.dataset.view;
+  }
+
+  const modeButton = event.target.closest("[data-workout-mode]");
+  if (modeButton) {
+    state.workoutMode = modeButton.dataset.workoutMode;
+    saveLocal();
+    render();
+  }
+
+  const stepNav = event.target.closest("[data-step-nav]");
+  if (stepNav) {
+    const session = currentSession();
+    const exercises = session?.exercises || [];
+    const index = currentStepIndex(exercises);
+    const nextIndex = stepNav.dataset.stepNav === "next" ? index + 1 : index - 1;
+    if (exercises[nextIndex]) {
+      state.stepExerciseId = exercises[nextIndex].id;
+      saveLocal();
+      render();
+    }
   }
 
   const dayButton = event.target.closest("[data-day]");
@@ -1343,33 +1460,6 @@ document.addEventListener("focusout", event => {
   }
 });
 
-document.addEventListener("pointerdown", event => {
-  const row = event.target.closest(".set-row");
-  if (!row || event.target.closest("input, button")) return;
-  swipeState = {
-    row,
-    startX: event.clientX,
-    startY: event.clientY
-  };
-});
-
-document.addEventListener("pointerup", event => {
-  if (!swipeState) return;
-  const deltaX = event.clientX - swipeState.startX;
-  const deltaY = Math.abs(event.clientY - swipeState.startY);
-  if (deltaX < -42 && deltaY < 30) {
-    closeSwipeRows(swipeState.row);
-    swipeState.row.classList.add("swipe-delete");
-  } else if (deltaX > 24) {
-    swipeState.row.classList.remove("swipe-delete");
-  }
-  swipeState = null;
-});
-
-document.addEventListener("pointercancel", () => {
-  swipeState = null;
-});
-
 els.userSelect.addEventListener("change", () => {
   state.selectedUser = els.userSelect.value;
   els.userNameInput.value = state.selectedUser;
@@ -1383,11 +1473,34 @@ els.renameUserBtn.addEventListener("click", renameCurrentUser);
 els.addGuestBtn.addEventListener("click", addGuestUser);
 els.deleteUserBtn.addEventListener("click", deleteCurrentUser);
 els.startSessionBtn.addEventListener("click", startSession);
+els.bottomStartSessionBtn.addEventListener("click", startSession);
+els.finishWorkoutBtn.addEventListener("click", finishSession);
 els.skipDayBtn.addEventListener("click", skipDay);
 els.refreshBtn.addEventListener("click", syncFromCloud);
 els.progressExercise.addEventListener("change", renderProgress);
 els.exerciseCategory.addEventListener("change", () => {
   els.exerciseIcon.value = ICON_BY_CATEGORY[els.exerciseCategory.value] || "machine";
+});
+els.exercisePhoto.addEventListener("change", async () => {
+  const file = els.exercisePhoto.files?.[0];
+  if (!file) return;
+  try {
+    state.pendingExercisePhoto = await resizeImageDataUrl(file);
+    state.removeExercisePhoto = false;
+    renderExercisePhotoPreview(state.pendingExercisePhoto);
+  } catch {
+    await confirmAction({
+      title: "Фото не загрузилось",
+      text: "Попробуй выбрать другое изображение.",
+      okText: "Понятно"
+    });
+  }
+});
+els.removeExercisePhotoBtn.addEventListener("click", () => {
+  state.pendingExercisePhoto = "";
+  state.removeExercisePhoto = true;
+  els.exercisePhoto.value = "";
+  renderExercisePhotoPreview("");
 });
 els.addDayBtn.addEventListener("click", addTrainingDay);
 els.saveExerciseBtn.addEventListener("click", saveExerciseFromDialog);

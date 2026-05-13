@@ -59,6 +59,10 @@
                 <button class="primary" id="startSessionBtn" type="button">Начать тренировку</button>
               </div>
             </div>
+            <div class="workout-mode-toggle" id="workoutModeToggle" aria-label="Вид тренировки">
+              <button class="segmented active" data-workout-mode="list" type="button">Список</button>
+              <button class="segmented" data-workout-mode="step" type="button">Шаги</button>
+            </div>
           </div>
         </aside>
 
@@ -69,6 +73,8 @@
             </div>
             <div class="exercise-list" id="exerciseList"></div>
             <div class="workout-bottom-actions">
+              <button class="primary" id="bottomStartSessionBtn" type="button">Начать тренировку</button>
+              <button class="secondary" id="finishWorkoutBtn" type="button">Закончить тренировку</button>
               <button class="ghost danger danger-text" id="skipDayBtn" type="button" aria-label="Пропустить день">
                 <span aria-hidden="true">×</span>
                 <span>Пропустить день</span>
@@ -150,6 +156,12 @@
           <span>Количество подходов</span>
           <input id="exerciseSetCount" type="number" min="1" max="12" inputmode="numeric">
         </label>
+        <label class="field">
+          <span>Фото тренажера</span>
+          <input id="exercisePhoto" type="file" accept="image/*">
+        </label>
+        <div class="photo-preview" id="exercisePhotoPreview"></div>
+        <button class="ghost danger danger-text" id="removeExercisePhotoBtn" type="button">Убрать фото</button>
         <div class="modal-actions">
           <button class="ghost" value="cancel" type="submit">Отмена</button>
           <button class="primary" id="saveExerciseBtn" value="default" type="button">Сохранить</button>

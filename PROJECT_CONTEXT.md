@@ -1,6 +1,6 @@
 # Reform Training Context
 
-Last updated: 2026-05-13, update 7
+Last updated: 2026-05-13, update 8
 
 ## What This Is
 
@@ -43,7 +43,7 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 - User selector is a dropdown with a small edit icon.
 - Top hero is intentionally user-first only; start session lives in the Session panel inside the Workout tab.
 - Training day/session sidebar is visible only on the Workout tab.
-- On mobile, Start Workout can become a fixed bottom action only when the Session panel scrolls offscreen and no session is active. Finish Workout should not be a floating action.
+- On mobile, Start Workout can become a fixed bottom action only when the Session panel scrolls offscreen, no session is active, and the bottom workout actions are not visible. Finish Workout should not be a floating action.
 - Selected tabs and selected training day use a restrained brand-adjacent secondary style, not the primary action color.
 - User rename, delete, and add guest live in a user dialog.
 - Destructive actions use in-app confirmation dialogs, not browser `confirm` or `alert`.
@@ -51,21 +51,24 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 - Exercises can be edited, replaced, reordered, skipped during active sessions, and opened in a media dialog.
 - Program editor supports adding exercises to a chosen training day and choosing a preset exercise icon.
 - Program editor supports changing exercise order with explicit up/down icon buttons, deleting individual exercises with confirmation, and setting the number of default sets in the exercise dialog.
-- Each exercise has a `Фото` action that opens a dialog with a preview plus Google Images and YouTube links.
+- Each exercise has a `Фото` action that opens a dialog with either the user's saved machine photo or a generated/search preview plus Google Images and YouTube links.
+- Exercise dialog supports uploading a custom machine photo. The app resizes it client-side and stores it in the exercise object so it syncs through Supabase with the shared program/session data.
 - Completed workouts in History can be copied as plain text for notes/messengers.
 - History rows should show session status plus start/end time, not total volume.
 - Selected user is shareable through a URL query parameter: `?user=Dima`, `?user=Dasha`, etc.
 - Set completion uses a compact check button (`✓`). The next pending set in an active session is accent-highlighted; completed set rows are visually muted, like crossed-off work.
 - Workout exercise cards keep management controls compact as SVG icon buttons. Set rows are the primary surface.
 - Workout tab does not edit the program template. Set add/delete and exercise management controls are shown only during an active session, where they affect that session only.
-- Sets can be added inside the active workout card. Active set rows also have a minimal trash icon; on mobile, swiping a set row left reveals the same delete action. Deleting still uses an in-app confirmation dialog.
+- Sets can be added inside the active workout card. Active set rows have a minimal trash icon for deleting a set; swipe-to-delete was removed because the explicit button is clearer.
 - In the Workout tab, set add/delete changes the active session only. In the Program tab, set count changes the template for future sessions.
 - Start Workout should fill the Session card width. Skip Day should appear once at the bottom of the Workout tab, not beside Start Workout.
+- Active workouts have two modes: `Список` shows all exercises, while `Шаги` shows one exercise at a time with previous/next navigation.
+- Workout bottom actions include Start before a session, Finish during a session, and Skip Day as a single bottom action.
 - Destructive actions should be visually quieter unless they are the final confirmation button: icon-only or low-emphasis red outline/ghost for skip/delete, text danger for reset-style actions.
 - Active session finish button uses a secondary style so it does not look like the primary “start” action.
 - Service worker registration calls `registration.update()`, reloads on `controllerchange`, and `sw.js` uses `skipWaiting()` plus `clients.claim()` for faster deploy pickup.
 - Weight/reps inputs must not call full `persist()` on each keystroke. They update in-memory state and `localStorage` immediately, then debounce Supabase sync; blur/change flushes pending sync. This prevents mobile keyboards from closing after every typed character.
-- Service worker cache currently must be bumped when deploying visible app changes. Current cache: `reform-training-v11`.
+- Service worker cache currently must be bumped when deploying visible app changes. Current cache: `reform-training-v12`.
 
 ## Important UX Preferences
 

@@ -354,7 +354,8 @@ button:disabled {
 }
 
 .session-card {
-  justify-content: space-between;
+  display: grid;
+  align-items: stretch;
   gap: 12px;
   margin-top: 12px;
 }
@@ -365,6 +366,7 @@ button:disabled {
   gap: 8px;
   width: 100%;
   min-width: 0;
+  min-height: 42px;
 }
 
 #startSessionBtn {
@@ -373,16 +375,41 @@ button:disabled {
 
 .workout-bottom-actions {
   display: grid;
+  gap: 10px;
   margin-top: 18px;
 }
 
-.workout-bottom-actions #skipDayBtn {
+.workout-bottom-actions #skipDayBtn,
+.workout-bottom-actions #bottomStartSessionBtn,
+.workout-bottom-actions #finishWorkoutBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
   min-height: 44px;
+}
+
+.workout-mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.segmented {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: rgba(17, 23, 27, .55);
+  font-weight: 800;
+}
+
+.segmented.active {
+  color: var(--secondary);
+  border-color: var(--secondary-line);
+  background: var(--secondary-bg);
 }
 
 body:not([data-view="workout"]) .sidebar {
@@ -481,10 +508,6 @@ body:not([data-view="workout"]) .layout {
   background: var(--panel-2);
   touch-action: pan-y;
   transition: opacity .18s ease, filter .18s ease, border-color .18s ease, background .18s ease, transform .18s ease;
-}
-
-.set-delete {
-  display: none;
 }
 
 .row-delete {
@@ -590,6 +613,67 @@ body:not([data-view="workout"]) .layout {
 .program-add-btn {
   margin-top: 2px;
   margin-bottom: 0;
+}
+
+.exercise-photo-strip {
+  width: calc(100% - 28px);
+  margin: 0 14px 12px;
+  padding: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+
+.exercise-photo-strip img,
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.photo-preview {
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  overflow: hidden;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: rgba(17, 23, 27, .52);
+}
+
+.step-workout {
+  display: grid;
+  gap: 12px;
+  min-height: min(100svh, 860px);
+}
+
+.step-topline,
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.step-card {
+  min-height: 0;
+}
+
+.step-nav {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 2;
+}
+
+.step-nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
 }
 
 .check-btn.next {
@@ -832,10 +916,11 @@ canvas {
     margin-top: 20px;
   }
 
-  body[data-view="workout"].session-offscreen:not(.session-active) #startSessionBtn {
+  body[data-view="workout"].session-offscreen:not(.session-active):not(.workout-bottom-visible) #startSessionBtn {
     position: fixed;
     left: 22px;
     right: 22px;
+    width: auto;
     bottom: calc(12px + env(safe-area-inset-bottom));
     z-index: 5;
     box-shadow: 0 16px 34px rgba(0, 0, 0, .32);
@@ -926,35 +1011,6 @@ canvas {
 
   .sets {
     overflow: hidden;
-  }
-
-  .set-row.swipe-delete {
-    transform: translateX(-72px);
-  }
-
-  .set-delete {
-    display: none;
-    place-items: center;
-    gap: 2px;
-    position: absolute;
-    top: 0;
-    right: -72px;
-    bottom: 0;
-    width: 64px;
-    border-radius: var(--radius);
-    color: #101418;
-    background: var(--accent-2);
-    font-size: 12px;
-    font-weight: 900;
-  }
-
-  .set-row.swipe-delete .set-delete {
-    display: grid;
-  }
-
-  .set-delete .svg-icon {
-    width: 15px;
-    height: 15px;
   }
 
   .history-row {
