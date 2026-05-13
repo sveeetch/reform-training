@@ -169,6 +169,7 @@ const els = {
   exerciseMachine: document.querySelector("#exerciseMachine"),
   exerciseCategory: document.querySelector("#exerciseCategory"),
   exerciseIcon: document.querySelector("#exerciseIcon"),
+  exerciseSetCount: document.querySelector("#exerciseSetCount"),
   saveExerciseBtn: document.querySelector("#saveExerciseBtn"),
   userDialog: document.querySelector("#userDialog"),
   confirmDialog: document.querySelector("#confirmDialog"),
@@ -905,12 +906,19 @@ function renderProgramEditor() {
           <button class="ghost danger subtle-icon-btn" data-delete-day="${day.id}" type="button" aria-label="Удалить день" title="Удалить день">${iconSvg("trash")}</button>
         </div>
       </div>
-      <div class="day-switch">
-        ${day.exercises.map(exercise => `
-          <button class="ghost day-btn program-exercise-btn" data-edit-program="${day.id}" data-exercise="${exercise.id}" type="button">
+      <div class="program-exercise-list">
+        ${day.exercises.map((exercise, index) => `
+          <div class="program-exercise-row" data-program-exercise-row="${exercise.id}">
+            <button class="ghost day-btn program-exercise-btn" data-edit-program="${day.id}" data-exercise="${exercise.id}" type="button">
             <span class="program-exercise-icon">${iconSvg(exercise.icon || ICON_BY_CATEGORY[exercise.category] || "machine")}</span>
             <span>${escapeHtml(exercise.name)}</span>
-          </button>
+            </button>
+            <div class="program-exercise-actions">
+              <button class="icon-action" data-move-program-exercise="${exercise.id}" data-program-day="${day.id}" data-direction="up" ${index === 0 ? "disabled" : ""} type="button" aria-label="Выше">${iconSvg("up")}</button>
+              <button class="icon-action" data-move-program-exercise="${exercise.id}" data-program-day="${day.id}" data-direction="down" ${index === day.exercises.length - 1 ? "disabled" : ""} type="button" aria-label="Ниже">${iconSvg("down")}</button>
+              <button class="icon-action danger danger-soft" data-delete-program-exercise="${exercise.id}" data-program-day="${day.id}" type="button" aria-label="Удалить упражнение">${iconSvg("trash")}</button>
+            </div>
+          </div>
         `).join("")}
       </div>
       <button class="add-set-btn program-add-btn" data-add-program-exercise="${day.id}" type="button">${iconSvg("plus")}<span>Добавить упражнение</span></button>
@@ -961,6 +969,21 @@ function updateSetField(exerciseId, setId, field, value) {
   if (set) set[field] = value;
 }
 
+function resizedSets(existingSets, count) {
+  const nextCount = Math.max(1, Math.min(12, Number(count) || 3));
+  const sets = existingSets?.map(set => ({ ...set })) || [];
+  while (sets.length < nextCount) {
+    const lastSet = sets.at(-1);
+    sets.push({
+      id: crypto.randomUUID(),
+      weight: lastSet?.weight || "",
+      reps: lastSet?.reps || "",
+      done: false
+    });
+  }
+  return sets.slice(0, nextCount);
+}
+
 function openExerciseDialog(exercise = null, programDayId = null) {
   state.editingExerciseId = exercise?.id || null;
   state.editingProgramDayId = programDayId;
@@ -969,6 +992,7 @@ function openExerciseDialog(exercise = null, programDayId = null) {
   els.exerciseMachine.value = exercise?.machine || "";
   els.exerciseCategory.value = exercise?.category || "chest";
   els.exerciseIcon.value = exercise?.icon || ICON_BY_CATEGORY[exercise?.category || "chest"] || "machine";
+  els.exerciseSetCount.value = String(exercise?.sets?.length || 3);
   els.dialog.showModal();
 }
 
@@ -979,17 +1003,13 @@ function saveExerciseFromDialog() {
     machine: els.exerciseMachine.value.trim(),
     category: els.exerciseCategory.value,
     icon: els.exerciseIcon.value || ICON_BY_CATEGORY[els.exerciseCategory.value] || "machine",
-    sets: [
-      { id: crypto.randomUUID(), weight: "", reps: "", done: false },
-      { id: crypto.randomUUID(), weight: "", reps: "", done: false },
-      { id: crypto.randomUUID(), weight: "", reps: "", done: false }
-    ]
+    sets: resizedSets(null, els.exerciseSetCount.value)
   };
   if (!payload.name) return;
   if (state.editingProgramDayId && state.editingExerciseId) {
     const day = currentProgram().find(item => item.id === state.editingProgramDayId);
     const index = day.exercises.findIndex(exercise => exercise.id === state.editingExerciseId);
-    payload.sets = day.exercises[index].sets;
+    payload.sets = resizedSets(day.exercises[index].sets, els.exerciseSetCount.value);
     day.exercises[index] = payload;
     persist();
   } else if (state.editingProgramDayId) {
@@ -998,7 +1018,7 @@ function saveExerciseFromDialog() {
     persist();
   } else if (state.editingExerciseId) {
     mutateExercise(state.editingExerciseId, (list, index) => {
-      payload.sets = list[index].sets;
+      payload.sets = resizedSets(list[index].sets, els.exerciseSetCount.value);
       list[index] = payload;
     });
   } else {
@@ -1247,6 +1267,36 @@ document.addEventListener("click", async event => {
   if (addProgramExercise) {
     state.selectedDay = addProgramExercise.dataset.addProgramExercise;
     openExerciseDialog(null, addProgramExercise.dataset.addProgramExercise);
+  }
+
+  const moveProgramExercise = event.target.closest("[data-move-program-exercise]");
+  if (moveProgramExercise) {
+    const day = currentProgram().find(item => item.id === moveProgramExercise.dataset.programDay);
+    const index = day?.exercises.findIndex(exercise => exercise.id === moveProgramExercise.dataset.moveProgramExercise);
+    if (day && index >= 0) {
+      if (moveProgramExercise.dataset.direction === "up" && index > 0) {
+        [day.exercises[index - 1], day.exercises[index]] = [day.exercises[index], day.exercises[index - 1]];
+      }
+      if (moveProgramExercise.dataset.direction === "down" && index < day.exercises.length - 1) {
+        [day.exercises[index + 1], day.exercises[index]] = [day.exercises[index], day.exercises[index + 1]];
+      }
+      persistWithTransition();
+    }
+  }
+
+  const deleteProgramExercise = event.target.closest("[data-delete-program-exercise]");
+  if (deleteProgramExercise) {
+    const day = currentProgram().find(item => item.id === deleteProgramExercise.dataset.programDay);
+    const exercise = day?.exercises.find(item => item.id === deleteProgramExercise.dataset.deleteProgramExercise);
+    if (!day || !exercise) return;
+    const confirmed = await confirmAction({
+      title: "Удалить упражнение?",
+      text: `"${exercise.name}" удалится из шаблона программы для ${state.selectedUser}.`,
+      okText: "Удалить"
+    });
+    if (!confirmed) return;
+    day.exercises = day.exercises.filter(item => item.id !== exercise.id);
+    persistWithTransition();
   }
 
   const deleteDay = event.target.closest("[data-delete-day]");

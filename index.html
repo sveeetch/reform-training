@@ -57,7 +57,6 @@
               </div>
               <div class="session-actions">
                 <button class="primary" id="startSessionBtn" type="button">Начать тренировку</button>
-                <button class="ghost danger subtle-icon-btn" id="skipDayBtn" type="button" aria-label="Пропустить день" title="Пропустить день">×</button>
               </div>
             </div>
           </div>
@@ -69,6 +68,12 @@
               <h3>Упражнения</h3>
             </div>
             <div class="exercise-list" id="exerciseList"></div>
+            <div class="workout-bottom-actions">
+              <button class="ghost danger danger-text" id="skipDayBtn" type="button" aria-label="Пропустить день">
+                <span aria-hidden="true">×</span>
+                <span>Пропустить день</span>
+              </button>
+            </div>
           </section>
 
           <section class="view" id="historyView">
@@ -140,6 +145,10 @@
             <option value="core">Кор (Core)</option>
             <option value="bodyweight">Свой вес (Bodyweight)</option>
           </select>
+        </label>
+        <label class="field">
+          <span>Количество подходов</span>
+          <input id="exerciseSetCount" type="number" min="1" max="12" inputmode="numeric">
         </label>
         <div class="modal-actions">
           <button class="ghost" value="cancel" type="submit">Отмена</button>

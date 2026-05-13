@@ -361,9 +361,28 @@ button:disabled {
 
 .session-actions {
   display: grid;
-  justify-items: start;
+  justify-items: stretch;
   gap: 8px;
-  min-width: 150px;
+  width: 100%;
+  min-width: 0;
+}
+
+#startSessionBtn {
+  width: 100%;
+}
+
+.workout-bottom-actions {
+  display: grid;
+  margin-top: 18px;
+}
+
+.workout-bottom-actions #skipDayBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
 }
 
 body:not([data-view="workout"]) .sidebar {
@@ -539,6 +558,23 @@ body:not([data-view="workout"]) .layout {
   grid-template-columns: 32px minmax(0, 1fr);
   align-items: center;
   gap: 10px;
+}
+
+.program-exercise-list {
+  display: grid;
+  gap: 10px;
+}
+
+.program-exercise-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.program-exercise-actions {
+  display: flex;
+  gap: 6px;
 }
 
 .program-exercise-icon {
@@ -792,6 +828,10 @@ canvas {
     min-width: 0;
   }
 
+  .workout-bottom-actions {
+    margin-top: 20px;
+  }
+
   body[data-view="workout"].session-offscreen:not(.session-active) #startSessionBtn {
     position: fixed;
     left: 22px;
@@ -859,6 +899,14 @@ canvas {
 
   .day-editor {
     gap: 16px;
+  }
+
+  .program-exercise-row {
+    grid-template-columns: 1fr;
+  }
+
+  .program-exercise-actions {
+    justify-content: flex-end;
   }
 
   .day-name-input {
