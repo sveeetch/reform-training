@@ -1,6 +1,6 @@
 # Reform Training Context
 
-Last updated: 2026-05-07, update 4
+Last updated: 2026-05-13, update 5
 
 ## What This Is
 
@@ -41,6 +41,10 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 ## Current Product Behavior
 
 - User selector is a dropdown with a small edit icon.
+- Top hero is intentionally user-first only; start session lives in the Session panel inside the Workout tab.
+- Training day/session sidebar is visible only on the Workout tab.
+- On mobile, Start Workout can become a fixed bottom action only when the Session panel scrolls offscreen and no session is active. Finish Workout should not be a floating action.
+- Selected tabs and selected training day use secondary styling, not the primary action color.
 - User rename, delete, and add guest live in a user dialog.
 - Destructive actions use in-app confirmation dialogs, not browser `confirm` or `alert`.
 - Training days can be added, renamed, deleted, and reset.
@@ -50,6 +54,9 @@ Exercise names should be visible as Russian plus English in parentheses, for exa
 - History rows should show session status plus start/end time, not total volume.
 - Selected user is shareable through a URL query parameter: `?user=Dima`, `?user=Dasha`, etc.
 - Set completion uses a compact check button (`✓`). The next pending set in an active session is accent-highlighted; completed set rows are visually muted, like crossed-off work.
+- Workout exercise cards keep management controls compact as icons. Set rows are the primary surface.
+- Workout tab does not edit the program template. Set add/delete and exercise management controls are shown only during an active session, where they affect that session only.
+- Sets can be added inside the active workout card. On mobile, swiping a set row left reveals a delete action for that set, and deleting still uses an in-app confirmation dialog.
 - Active session finish button uses a secondary style so it does not look like the primary “start” action.
 - Service worker registration calls `registration.update()`, reloads on `controllerchange`, and `sw.js` uses `skipWaiting()` plus `clients.claim()` for faster deploy pickup.
 - Weight/reps inputs must not call full `persist()` on each keystroke. They update in-memory state and `localStorage` immediately, then debounce Supabase sync; blur/change flushes pending sync. This prevents mobile keyboards from closing after every typed character.

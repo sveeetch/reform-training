@@ -142,8 +142,6 @@ const TEXT_MIGRATIONS = new Map([
 
 const els = {
   syncStatus: document.querySelector("#syncStatus"),
-  todayTitle: document.querySelector("#todayTitle"),
-  todayMeta: document.querySelector("#todayMeta"),
   userSelect: document.querySelector("#userSelect"),
   editUserBtn: document.querySelector("#editUserBtn"),
   userNameInput: document.querySelector("#userNameInput"),
@@ -161,7 +159,6 @@ const els = {
   progressChart: document.querySelector("#progressChart"),
   statsGrid: document.querySelector("#statsGrid"),
   programEditor: document.querySelector("#programEditor"),
-  addExerciseBtn: document.querySelector("#addExerciseBtn"),
   addDayBtn: document.querySelector("#addDayBtn"),
   resetProgramBtn: document.querySelector("#resetProgramBtn"),
   dialog: document.querySelector("#exerciseDialog"),
@@ -196,6 +193,7 @@ let state = {
   onlineReady: false
 };
 let syncTimer = null;
+let swipeState = null;
 
 applyUserFromUrl();
 normalizeState();
@@ -583,6 +581,7 @@ function confirmAction({ title, text, okText = "Подтвердить" }) {
 }
 
 function render() {
+  updateAppChrome();
   renderUsers();
   renderDays();
   renderWorkout();
@@ -590,6 +589,26 @@ function render() {
   renderProgressOptions();
   renderProgress();
   renderProgramEditor();
+}
+
+function updateAppChrome() {
+  document.body.classList.toggle("session-active", Boolean(currentSession()));
+}
+
+function closeSwipeRows(exceptRow = null) {
+  document.querySelectorAll(".set-row.swipe-delete").forEach(row => {
+    if (row !== exceptRow) row.classList.remove("swipe-delete");
+  });
+}
+
+function setupSessionObserver() {
+  const panel = document.querySelector(".session-panel");
+  if (!panel || typeof IntersectionObserver === "undefined") return;
+  const observer = new IntersectionObserver(entries => {
+    const entry = entries[0];
+    document.body.classList.toggle("session-offscreen", !entry.isIntersecting);
+  }, { threshold: 0.12 });
+  observer.observe(panel);
 }
 
 function renderUsers() {
@@ -602,8 +621,6 @@ function renderUsers() {
 
 function renderDays() {
   const day = currentDay();
-  els.todayTitle.textContent = day.name;
-  els.todayMeta.textContent = `${day.exercises.length} упражнений · ${state.selectedUser}`;
   els.daySwitch.innerHTML = currentProgram().map(programDay => {
     const active = programDay.id === state.selectedDay ? "active" : "";
     return `<button class="tab day-btn ${active}" data-day="${programDay.id}" type="button">${programDay.name}</button>`;
@@ -632,6 +649,7 @@ function exerciseCard(exercise, index, hasSession) {
       <input inputmode="decimal" aria-label="Вес" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="кг">
       <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
       <button class="${checkClass}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">✓</button>
+      ${hasSession ? `<button class="set-delete" data-action="delete-set" type="button" aria-label="Удалить подход">Удалить</button>` : ""}
     </div>
   `;
   }).join("");
@@ -647,14 +665,17 @@ function exerciseCard(exercise, index, hasSession) {
           </div>
         </div>
         <div class="exercise-actions">
-          <button class="ghost media-trigger" data-action="media" type="button">Фото</button>
-          <button class="ghost" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button">Вверх</button>
-          <button class="ghost" data-action="move-down" type="button">Вниз</button>
-          <button class="ghost" data-action="replace" type="button">${hasSession ? "Заменить" : "Редактировать"}</button>
-          ${hasSession ? `<button class="ghost danger" data-action="skip-exercise" type="button">Пропустить</button>` : ""}
+          <button class="icon-action" data-action="media" type="button" aria-label="Фото">▧</button>
+          ${hasSession ? `
+            <button class="icon-action" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button" aria-label="Вверх">↑</button>
+            <button class="icon-action" data-action="move-down" type="button" aria-label="Вниз">↓</button>
+            <button class="icon-action" data-action="replace" type="button" aria-label="Заменить">✎</button>
+            <button class="icon-action danger" data-action="skip-exercise" type="button" aria-label="Пропустить">×</button>
+          ` : ""}
         </div>
       </div>
       <div class="sets">${sets}</div>
+      ${hasSession ? `<button class="add-set-btn" data-action="add-set" type="button">+ Добавить подход</button>` : ""}
     </article>
   `;
 }
@@ -1044,12 +1065,14 @@ function escapeHtml(value) {
 }
 
 document.addEventListener("click", async event => {
+  if (!event.target.closest(".set-row")) closeSwipeRows();
   const tab = event.target.closest(".tab[data-view]");
   if (tab) {
     document.querySelectorAll(".tab[data-view]").forEach(item => item.classList.remove("active"));
     document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
     tab.classList.add("active");
     document.querySelector(`#${tab.dataset.view}View`).classList.add("active");
+    document.body.dataset.view = tab.dataset.view;
   }
 
   const dayButton = event.target.closest("[data-day]");
@@ -1064,6 +1087,7 @@ document.addEventListener("click", async event => {
     const card = actionButton.closest("[data-exercise]");
     const exerciseId = card?.dataset.exercise;
     const action = actionButton.dataset.action;
+    if (!exerciseId) return;
     if (action === "toggle-set") {
       const row = actionButton.closest("[data-set]");
       const setId = row.dataset.set;
@@ -1071,6 +1095,35 @@ document.addEventListener("click", async event => {
         const exercise = list.find(item => item.id === exerciseId);
         const set = exercise.sets.find(item => item.id === setId);
         set.done = !set.done;
+      });
+    }
+    if (action === "add-set") {
+      const list = activeExerciseList();
+      const exercise = list.find(item => item.id === exerciseId);
+      const lastSet = exercise?.sets.at(-1);
+      if (exercise) {
+        exercise.sets.push({
+          id: crypto.randomUUID(),
+          weight: lastSet?.weight || "",
+          reps: lastSet?.reps || "",
+          done: false
+        });
+        persistWithTransition();
+      }
+    }
+    if (action === "delete-set") {
+      const row = actionButton.closest("[data-set]");
+      const setId = row.dataset.set;
+      const confirmed = await confirmAction({
+        title: "Удалить подход?",
+        text: "Эта строка удалится только из текущей активной тренировки.",
+        okText: "Удалить"
+      });
+      if (!confirmed) return;
+      mutateExercise(exerciseId, list => {
+        const exercise = list.find(item => item.id === exerciseId);
+        if (!exercise || exercise.sets.length <= 1) return;
+        exercise.sets = exercise.sets.filter(set => set.id !== setId);
       });
     }
     if (action === "move-up") {
@@ -1153,6 +1206,33 @@ document.addEventListener("focusout", event => {
   }
 });
 
+document.addEventListener("pointerdown", event => {
+  const row = event.target.closest(".set-row");
+  if (!row || event.target.closest("input, button")) return;
+  swipeState = {
+    row,
+    startX: event.clientX,
+    startY: event.clientY
+  };
+});
+
+document.addEventListener("pointerup", event => {
+  if (!swipeState) return;
+  const deltaX = event.clientX - swipeState.startX;
+  const deltaY = Math.abs(event.clientY - swipeState.startY);
+  if (deltaX < -42 && deltaY < 30) {
+    closeSwipeRows(swipeState.row);
+    swipeState.row.classList.add("swipe-delete");
+  } else if (deltaX > 24) {
+    swipeState.row.classList.remove("swipe-delete");
+  }
+  swipeState = null;
+});
+
+document.addEventListener("pointercancel", () => {
+  swipeState = null;
+});
+
 els.userSelect.addEventListener("change", () => {
   state.selectedUser = els.userSelect.value;
   els.userNameInput.value = state.selectedUser;
@@ -1169,7 +1249,6 @@ els.startSessionBtn.addEventListener("click", startSession);
 els.skipDayBtn.addEventListener("click", skipDay);
 els.refreshBtn.addEventListener("click", syncFromCloud);
 els.progressExercise.addEventListener("change", renderProgress);
-els.addExerciseBtn.addEventListener("click", () => openExerciseDialog());
 els.addDayBtn.addEventListener("click", addTrainingDay);
 els.saveExerciseBtn.addEventListener("click", saveExerciseFromDialog);
 els.resetProgramBtn.addEventListener("click", async () => {
@@ -1200,5 +1279,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+document.body.dataset.view = "workout";
 render();
 syncFromCloud();
+setupSessionObserver();
