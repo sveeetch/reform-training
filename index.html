@@ -57,7 +57,7 @@
               </div>
               <div class="session-actions">
                 <button class="primary" id="startSessionBtn" type="button">Начать тренировку</button>
-                <button class="ghost danger" id="skipDayBtn" type="button">Пропустить</button>
+                <button class="ghost danger subtle-icon-btn" id="skipDayBtn" type="button" aria-label="Пропустить день" title="Пропустить день">×</button>
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@
               <h3>Редактор программы</h3>
               <div class="toolbar-actions">
                 <button class="ghost" id="addDayBtn" type="button">Добавить день</button>
-                <button class="ghost" id="resetProgramBtn" type="button">Сбросить программу</button>
+                <button class="ghost danger danger-text" id="resetProgramBtn" type="button">Сбросить программу</button>
               </div>
             </div>
             <div class="editor-list" id="programEditor"></div>
@@ -128,6 +128,19 @@
             <option value="core">Кор (Core)</option>
           </select>
         </label>
+        <label class="field">
+          <span>Иконка</span>
+          <select id="exerciseIcon">
+            <option value="barbell">Штанга (Barbell)</option>
+            <option value="dumbbell">Гантель (Dumbbell)</option>
+            <option value="cable">Блок (Cable)</option>
+            <option value="machine">Тренажер (Machine)</option>
+            <option value="legs">Ноги (Legs)</option>
+            <option value="glutes">Ягодицы (Glutes)</option>
+            <option value="core">Кор (Core)</option>
+            <option value="bodyweight">Свой вес (Bodyweight)</option>
+          </select>
+        </label>
         <div class="modal-actions">
           <button class="ghost" value="cancel" type="submit">Отмена</button>
           <button class="primary" id="saveExerciseBtn" value="default" type="button">Сохранить</button>
@@ -144,7 +157,7 @@
         </label>
         <div class="modal-actions spread">
           <button class="ghost" id="addGuestBtn" type="button">Добавить гостя</button>
-          <button class="ghost danger" id="deleteUserBtn" type="button">Удалить</button>
+          <button class="ghost danger danger-text" id="deleteUserBtn" type="button">Удалить</button>
         </div>
         <div class="modal-actions">
           <button class="ghost" value="cancel" type="submit">Отмена</button>

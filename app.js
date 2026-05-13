@@ -79,15 +79,17 @@ const DEFAULT_PROGRAMS_BY_USER = {
   Dasha: DEFAULT_DASHA_PROGRAM
 };
 const CATEGORY_LABELS = {
-  chest: "CH",
-  back: "BA",
-  shoulders: "SH",
-  arms: "AR",
-  legs: "LG",
-  calves: "CA",
-  glutes: "GL",
-  core: "CO"
+  chest: categoryDefaultIcon("chest"),
+  back: categoryDefaultIcon("back"),
+  shoulders: categoryDefaultIcon("shoulders"),
+  arms: categoryDefaultIcon("arms"),
+  legs: categoryDefaultIcon("legs"),
+  calves: categoryDefaultIcon("calves"),
+  glutes: categoryDefaultIcon("glutes"),
+  core: categoryDefaultIcon("core")
 };
+
+const ICON_BY_CATEGORY = CATEGORY_LABELS;
 
 const TEXT_MIGRATIONS = new Map([
   ["Reform fullbody 1", "Реформ фулбоди 1 (Reform fullbody 1)"],
@@ -166,6 +168,7 @@ const els = {
   exerciseName: document.querySelector("#exerciseName"),
   exerciseMachine: document.querySelector("#exerciseMachine"),
   exerciseCategory: document.querySelector("#exerciseCategory"),
+  exerciseIcon: document.querySelector("#exerciseIcon"),
   saveExerciseBtn: document.querySelector("#saveExerciseBtn"),
   userDialog: document.querySelector("#userDialog"),
   confirmDialog: document.querySelector("#confirmDialog"),
@@ -198,12 +201,26 @@ let swipeState = null;
 applyUserFromUrl();
 normalizeState();
 
-function item(id, name, weight, reps, note, category) {
+function categoryDefaultIcon(category) {
+  return {
+    chest: "barbell",
+    back: "cable",
+    shoulders: "dumbbell",
+    arms: "dumbbell",
+    legs: "legs",
+    calves: "legs",
+    glutes: "glutes",
+    core: "core"
+  }[category] || "machine";
+}
+
+function item(id, name, weight, reps, note, category, icon = categoryDefaultIcon(category)) {
   return {
     id,
     name,
     machine: note,
     category,
+    icon,
     sets: reps.map((rep, index) => ({
       id: `${id}-set-${index + 1}`,
       weight,
@@ -272,7 +289,9 @@ function normalizeState() {
     }
     if (restoreEmptyDefaultDays(user)) changed = true;
     if (migrateProgramText(state.programsByUser[user])) changed = true;
+    if (normalizeExerciseIcons(state.programsByUser[user])) changed = true;
   });
+  if (normalizeSessionIcons()) changed = true;
   if (!state.users.includes(state.selectedUser)) {
     state.selectedUser = state.users[0] || "Dima";
     changed = true;
@@ -282,6 +301,32 @@ function normalizeState() {
     changed = true;
   }
   state.needsSave = Boolean(state.needsSave || changed);
+}
+
+function normalizeExerciseIcons(program) {
+  let changed = false;
+  program.forEach(day => {
+    day.exercises.forEach(exercise => {
+      if (!exercise.icon) {
+        exercise.icon = ICON_BY_CATEGORY[exercise.category] || "machine";
+        changed = true;
+      }
+    });
+  });
+  return changed;
+}
+
+function normalizeSessionIcons() {
+  let changed = false;
+  state.sessions.forEach(session => {
+    session.exercises?.forEach(exercise => {
+      if (!exercise.icon) {
+        exercise.icon = ICON_BY_CATEGORY[exercise.category] || "machine";
+        changed = true;
+      }
+    });
+  });
+  return changed;
 }
 
 function migrateProgramText(program) {
@@ -648,8 +693,9 @@ function exerciseCard(exercise, index, hasSession) {
       <div class="set-number">${setIndex + 1}</div>
       <input inputmode="decimal" aria-label="Вес" value="${escapeHtml(set.weight)}" data-field="weight" placeholder="кг">
       <input inputmode="numeric" aria-label="Повторы" value="${escapeHtml(set.reps)}" data-field="reps" placeholder="повт.">
-      <button class="${checkClass}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">✓</button>
-      ${hasSession ? `<button class="set-delete" data-action="delete-set" type="button" aria-label="Удалить подход">Удалить</button>` : ""}
+      <button class="${checkClass}" data-action="toggle-set" type="button" aria-label="${set.done ? "Снять отметку" : "Отметить подход"}">${iconSvg("check")}</button>
+      ${hasSession ? `<button class="row-delete danger" data-action="delete-set" type="button" aria-label="Удалить подход">${iconSvg("trash")}</button>` : ""}
+      ${hasSession ? `<button class="set-delete" data-action="delete-set" type="button" aria-label="Удалить подход">${iconSvg("trash")}<span>Удалить</span></button>` : ""}
     </div>
   `;
   }).join("");
@@ -658,24 +704,24 @@ function exerciseCard(exercise, index, hasSession) {
     <article class="exercise-card" data-exercise="${exercise.id}">
       <div class="exercise-head">
         <div class="exercise-title">
-          <span class="machine-icon">${CATEGORY_LABELS[exercise.category] || "EX"}</span>
+          <span class="machine-icon">${iconSvg(exercise.icon || ICON_BY_CATEGORY[exercise.category] || "machine", exercise.category)}</span>
           <div>
             <h3>${escapeHtml(exercise.name)}</h3>
             <p class="muted">${escapeHtml(exercise.machine || "Без заметки")}</p>
           </div>
         </div>
         <div class="exercise-actions">
-          <button class="icon-action" data-action="media" type="button" aria-label="Фото">▧</button>
+          <button class="icon-action" data-action="media" type="button" aria-label="Фото">${iconSvg("image")}</button>
           ${hasSession ? `
-            <button class="icon-action" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button" aria-label="Вверх">↑</button>
-            <button class="icon-action" data-action="move-down" type="button" aria-label="Вниз">↓</button>
-            <button class="icon-action" data-action="replace" type="button" aria-label="Заменить">✎</button>
-            <button class="icon-action danger" data-action="skip-exercise" type="button" aria-label="Пропустить">×</button>
+            <button class="icon-action" data-action="move-up" ${index === 0 ? "disabled" : ""} type="button" aria-label="Вверх">${iconSvg("up")}</button>
+            <button class="icon-action" data-action="move-down" type="button" aria-label="Вниз">${iconSvg("down")}</button>
+            <button class="icon-action" data-action="replace" type="button" aria-label="Заменить">${iconSvg("edit")}</button>
+            <button class="icon-action danger danger-soft" data-action="skip-exercise" type="button" aria-label="Пропустить">${iconSvg("close")}</button>
           ` : ""}
         </div>
       </div>
       <div class="sets">${sets}</div>
-      ${hasSession ? `<button class="add-set-btn" data-action="add-set" type="button">+ Добавить подход</button>` : ""}
+      ${hasSession ? `<button class="add-set-btn" data-action="add-set" type="button">${iconSvg("plus")}<span>Добавить подход</span></button>` : ""}
     </article>
   `;
 }
@@ -856,12 +902,18 @@ function renderProgramEditor() {
         <input class="day-name-input" value="${escapeHtml(day.name)}" data-rename-day="${day.id}" aria-label="Training day name">
         <div class="day-editor-actions">
           <span class="badge">${day.exercises.length} упражнений</span>
-          <button class="ghost danger" data-delete-day="${day.id}" type="button">Удалить</button>
+          <button class="ghost danger subtle-icon-btn" data-delete-day="${day.id}" type="button" aria-label="Удалить день" title="Удалить день">${iconSvg("trash")}</button>
         </div>
       </div>
       <div class="day-switch">
-        ${day.exercises.map(exercise => `<button class="ghost day-btn" data-edit-program="${day.id}" data-exercise="${exercise.id}" type="button">${escapeHtml(exercise.name)}</button>`).join("")}
+        ${day.exercises.map(exercise => `
+          <button class="ghost day-btn program-exercise-btn" data-edit-program="${day.id}" data-exercise="${exercise.id}" type="button">
+            <span class="program-exercise-icon">${iconSvg(exercise.icon || ICON_BY_CATEGORY[exercise.category] || "machine")}</span>
+            <span>${escapeHtml(exercise.name)}</span>
+          </button>
+        `).join("")}
       </div>
+      <button class="add-set-btn program-add-btn" data-add-program-exercise="${day.id}" type="button">${iconSvg("plus")}<span>Добавить упражнение</span></button>
     </div>
   `).join("");
 }
@@ -916,6 +968,7 @@ function openExerciseDialog(exercise = null, programDayId = null) {
   els.exerciseName.value = exercise?.name || "";
   els.exerciseMachine.value = exercise?.machine || "";
   els.exerciseCategory.value = exercise?.category || "chest";
+  els.exerciseIcon.value = exercise?.icon || ICON_BY_CATEGORY[exercise?.category || "chest"] || "machine";
   els.dialog.showModal();
 }
 
@@ -925,6 +978,7 @@ function saveExerciseFromDialog() {
     name: els.exerciseName.value.trim(),
     machine: els.exerciseMachine.value.trim(),
     category: els.exerciseCategory.value,
+    icon: els.exerciseIcon.value || ICON_BY_CATEGORY[els.exerciseCategory.value] || "machine",
     sets: [
       { id: crypto.randomUUID(), weight: "", reps: "", done: false },
       { id: crypto.randomUUID(), weight: "", reps: "", done: false },
@@ -937,6 +991,10 @@ function saveExerciseFromDialog() {
     const index = day.exercises.findIndex(exercise => exercise.id === state.editingExerciseId);
     payload.sets = day.exercises[index].sets;
     day.exercises[index] = payload;
+    persist();
+  } else if (state.editingProgramDayId) {
+    const day = currentProgram().find(item => item.id === state.editingProgramDayId);
+    day?.exercises.push(payload);
     persist();
   } else if (state.editingExerciseId) {
     mutateExercise(state.editingExerciseId, (list, index) => {
@@ -1064,6 +1122,29 @@ function escapeHtml(value) {
   })[char]);
 }
 
+function iconSvg(name, label = "") {
+  const title = label ? `<title>${escapeHtml(label)}</title>` : "";
+  const icons = {
+    barbell: `<line x1="3" y1="12" x2="21" y2="12"></line><line x1="6" y1="8" x2="6" y2="16"></line><line x1="9" y1="9" x2="9" y2="15"></line><line x1="15" y1="9" x2="15" y2="15"></line><line x1="18" y1="8" x2="18" y2="16"></line>`,
+    dumbbell: `<path d="M7 7l10 10"></path><path d="M5 9l4-4"></path><path d="M15 19l4-4"></path><path d="M3.5 10.5l7-7"></path><path d="M13.5 20.5l7-7"></path>`,
+    cable: `<path d="M6 4h12"></path><path d="M8 4v6"></path><path d="M16 4v6"></path><path d="M9 10h6l-1 10h-4z"></path>`,
+    machine: `<rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M8 8h8"></path><path d="M8 12h8"></path><path d="M9 20v-4"></path><path d="M15 20v-4"></path>`,
+    legs: `<path d="M9 3v7l-3 10"></path><path d="M15 3v7l3 10"></path><path d="M7 20h4"></path><path d="M13 20h4"></path>`,
+    glutes: `<path d="M12 20c-4 0-7-3-7-7 0-3 2-6 5-7"></path><path d="M12 20c4 0 7-3 7-7 0-3-2-6-5-7"></path><path d="M12 7v13"></path>`,
+    core: `<path d="M9 3h6l2 5-1 12H8L7 8z"></path><path d="M9 9h6"></path><path d="M9 13h6"></path><path d="M10 17h4"></path>`,
+    bodyweight: `<circle cx="12" cy="5" r="2"></circle><path d="M12 7v6"></path><path d="M7 10h10"></path><path d="M9 20l3-7 3 7"></path>`,
+    image: `<rect x="4" y="5" width="16" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.5"></circle><path d="M7 17l4-4 3 3 2-2 2 3"></path>`,
+    up: `<path d="M12 19V5"></path><path d="M6 11l6-6 6 6"></path>`,
+    down: `<path d="M12 5v14"></path><path d="M18 13l-6 6-6-6"></path>`,
+    edit: `<path d="M4 20h4l11-11-4-4L4 16z"></path><path d="M13 6l4 4"></path>`,
+    close: `<path d="M6 6l12 12"></path><path d="M18 6L6 18"></path>`,
+    trash: `<path d="M4 7h16"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M6 7l1 14h10l1-14"></path><path d="M9 7V4h6v3"></path>`,
+    check: `<path d="M5 12l5 5L20 7"></path>`,
+    plus: `<path d="M12 5v14"></path><path d="M5 12h14"></path>`
+  };
+  return `<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="${label ? "false" : "true"}" focusable="false">${title}${icons[name] || icons.machine}</svg>`;
+}
+
 document.addEventListener("click", async event => {
   if (!event.target.closest(".set-row")) closeSwipeRows();
   const tab = event.target.closest(".tab[data-view]");
@@ -1162,6 +1243,12 @@ document.addEventListener("click", async event => {
     openExerciseDialog(exercise, programEdit.dataset.editProgram);
   }
 
+  const addProgramExercise = event.target.closest("[data-add-program-exercise]");
+  if (addProgramExercise) {
+    state.selectedDay = addProgramExercise.dataset.addProgramExercise;
+    openExerciseDialog(null, addProgramExercise.dataset.addProgramExercise);
+  }
+
   const deleteDay = event.target.closest("[data-delete-day]");
   if (deleteDay) {
     deleteTrainingDay(deleteDay.dataset.deleteDay);
@@ -1249,6 +1336,9 @@ els.startSessionBtn.addEventListener("click", startSession);
 els.skipDayBtn.addEventListener("click", skipDay);
 els.refreshBtn.addEventListener("click", syncFromCloud);
 els.progressExercise.addEventListener("change", renderProgress);
+els.exerciseCategory.addEventListener("change", () => {
+  els.exerciseIcon.value = ICON_BY_CATEGORY[els.exerciseCategory.value] || "machine";
+});
 els.addDayBtn.addEventListener("click", addTrainingDay);
 els.saveExerciseBtn.addEventListener("click", saveExerciseFromDialog);
 els.resetProgramBtn.addEventListener("click", async () => {

@@ -7,9 +7,12 @@
   --line: #303a40;
   --accent: #e7ff55;
   --accent-2: #ff6b4a;
-  --secondary: #5ee6b6;
-  --secondary-bg: rgba(94, 230, 182, .14);
+  --secondary: #d7f872;
+  --secondary-bg: rgba(231, 255, 85, .11);
+  --secondary-line: rgba(231, 255, 85, .34);
   --neutral: rgba(23, 29, 34, .82);
+  --danger-soft: rgba(255, 107, 74, .11);
+  --danger-line: rgba(255, 107, 74, .28);
   --blue: #69a7ff;
   --green: #4fe08f;
   --radius: 8px;
@@ -233,7 +236,7 @@ h3 {
 .tab.active,
 .day-btn.active,
 .secondary {
-  border: 1px solid rgba(94, 230, 182, .42);
+  border: 1px solid var(--secondary-line);
   color: var(--secondary);
   background: var(--secondary-bg);
   font-weight: 700;
@@ -253,8 +256,37 @@ button:disabled {
   color: var(--accent-2);
 }
 
+.danger.ghost,
+.danger.icon-action,
+.danger.subtle-icon-btn,
+.danger.row-delete {
+  border-color: var(--danger-line);
+  color: #ff8b72;
+  background: var(--danger-soft);
+}
+
+.danger-soft {
+  opacity: .78;
+}
+
+.danger-text {
+  min-height: 38px;
+  color: #ff8b72;
+  background: rgba(255, 107, 74, .07);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.subtle-icon-btn {
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
 #skipDayBtn {
-  min-width: 90px;
+  min-width: 42px;
   white-space: nowrap;
 }
 
@@ -329,6 +361,7 @@ button:disabled {
 
 .session-actions {
   display: grid;
+  justify-items: start;
   gap: 8px;
   min-width: 150px;
 }
@@ -376,9 +409,11 @@ body:not([data-view="workout"]) .layout {
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  color: #111;
-  background: var(--accent);
+  color: var(--secondary);
+  border: 1px solid var(--secondary-line);
+  background: rgba(231, 255, 85, .09);
   font-weight: 900;
+  flex: 0 0 38px;
 }
 
 .exercise-actions {
@@ -391,6 +426,7 @@ body:not([data-view="workout"]) .layout {
 .icon-action {
   display: grid;
   place-items: center;
+  flex: 0 0 34px;
   width: 34px;
   height: 34px;
   border: 1px solid var(--line);
@@ -401,13 +437,24 @@ body:not([data-view="workout"]) .layout {
   font-weight: 800;
 }
 
+.svg-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .sets {
   padding: 0 14px 10px;
 }
 
 .set-row {
   display: grid;
-  grid-template-columns: 34px 1fr 1fr 44px;
+  grid-template-columns: 34px 1fr 1fr 44px 34px;
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--line);
@@ -419,6 +466,23 @@ body:not([data-view="workout"]) .layout {
 
 .set-delete {
   display: none;
+}
+
+.row-delete {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  width: 34px;
+  min-height: 40px;
+  border: 1px solid rgba(255, 107, 74, .22);
+  border-radius: var(--radius);
+  background: rgba(255, 107, 74, .035);
+  opacity: .62;
+}
+
+.row-delete .svg-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .set-row.done {
@@ -451,6 +515,10 @@ body:not([data-view="workout"]) .layout {
 }
 
 .add-set-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: calc(100% - 28px);
   min-height: 40px;
   margin: 0 14px 14px;
@@ -464,6 +532,28 @@ body:not([data-view="workout"]) .layout {
 .check-btn.active {
   color: var(--muted);
   background: rgba(17, 23, 27, .9);
+}
+
+.program-exercise-btn {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.program-exercise-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--secondary);
+  background: rgba(231, 255, 85, .08);
+}
+
+.program-add-btn {
+  margin-top: 2px;
+  margin-bottom: 0;
 }
 
 .check-btn.next {
@@ -779,7 +869,7 @@ canvas {
     position: relative;
     padding: 10px;
     gap: 8px;
-    grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1fr) 42px;
+    grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1fr) 42px 34px;
   }
 
   .set-row input {
@@ -795,8 +885,9 @@ canvas {
   }
 
   .set-delete {
-    display: grid;
+    display: none;
     place-items: center;
+    gap: 2px;
     position: absolute;
     top: 0;
     right: -72px;
@@ -807,6 +898,15 @@ canvas {
     background: var(--accent-2);
     font-size: 12px;
     font-weight: 900;
+  }
+
+  .set-row.swipe-delete .set-delete {
+    display: grid;
+  }
+
+  .set-delete .svg-icon {
+    width: 15px;
+    height: 15px;
   }
 
   .history-row {
